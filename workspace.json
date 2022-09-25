@@ -2,7 +2,9 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "data": "libs/data",
     "lottery": "apps/lottery",
-    "lottery-e2e": "apps/lottery-e2e"
+    "lottery-e2e": "apps/lottery-e2e",
+    "nest-api": "apps/nest-api"
   }
 }

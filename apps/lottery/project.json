@@ -48,7 +48,8 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "lottery:build",
-        "hmr": true
+        "hmr": true,
+        "proxyConfig": "apps/lottery/proxy.conf.json"
       },
       "configurations": {
         "development": {
