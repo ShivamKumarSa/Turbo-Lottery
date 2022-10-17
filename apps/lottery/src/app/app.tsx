@@ -8,12 +8,12 @@ import logoShaper from '../Images/logo-shaper.png';
 import theme from '../styles/theme';
 
 export function App() {
-  // const navigate = useNavigate();
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     navigate('/login');
-  //   }, 8000);
-  // }, []);
+  const navigate = useNavigate();
+  useEffect(() => {
+    setTimeout(() => {
+      navigate('/login');
+    }, 8000);
+  }, []);
   return (
     <Box
       sx={{
