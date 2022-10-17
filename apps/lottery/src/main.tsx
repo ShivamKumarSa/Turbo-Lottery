@@ -43,49 +43,49 @@ root.render(
                 <Route
                   index
                   element={
-                    // <PublicAuth>
-                    <App />
-                    // </PublicAuth>
+                    <PublicAuth>
+                      <App />
+                    </PublicAuth>
                   }
                 />
                 <Route
                   path="/login"
                   element={
-                    // <PublicAuth>
-                    <Login />
-                    // </PublicAuth>
+                    <PublicAuth>
+                      <Login />
+                    </PublicAuth>
                   }
                 />
                 <Route
                   path="/register"
                   element={
-                    // <PublicAuth>
-                    <Register />
-                    // </PublicAuth>
+                    <PublicAuth>
+                      <Register />
+                    </PublicAuth>
                   }
                 />
                 <Route
                   path="/dashboard"
                   element={
-                    // <UserAuth>
-                    <Dashboard />
-                    // </UserAuth>
+                    <UserAuth>
+                      <Dashboard />
+                    </UserAuth>
                   }
                 />
                 <Route
                   path="/adminDashboard/ticket"
                   element={
-                    // <AdminAuth>
-                    <AdminDashboard />
-                    // </AdminAuth>
+                    <AdminAuth>
+                      <AdminDashboard />
+                    </AdminAuth>
                   }
                 />
                 <Route
                   path="/adminDashboard/user"
                   element={
-                    // <AdminAuth>
-                    <AdminDashboardUserView />
-                    // </AdminAuth>
+                    <AdminAuth>
+                      <AdminDashboardUserView />
+                    </AdminAuth>
                   }
                 />
                 <Route path="*" element={<ErrorPage />} />
