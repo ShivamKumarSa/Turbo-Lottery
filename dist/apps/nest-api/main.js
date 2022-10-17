@@ -337,6 +337,8 @@ const user_module_1 = __webpack_require__("./apps/nest-api/src/app/user/user.mod
 const ticket_module_1 = __webpack_require__("./apps/nest-api/src/app/ticket/ticket.module.ts");
 const auth_module_1 = __webpack_require__("./apps/nest-api/src/app/auth/auth.module.ts");
 const app_gateway_1 = __webpack_require__("./apps/nest-api/src/app/app.gateway.ts");
+const serve_static_1 = __webpack_require__("@nestjs/serve-static"); // <- INSERT LINE
+const path_1 = __webpack_require__("path"); // <- INSERT LINE
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
@@ -345,6 +347,10 @@ AppModule = tslib_1.__decorate([
             user_module_1.UserModule,
             ticket_module_1.TicketModule,
             auth_module_1.AuthModule,
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(__dirname, '..', 'lottery'),
+                exclude: ['/api*'],
+            }),
             mongoose_1.MongooseModule.forRoot('mongodb+srv://Shivam:Shivam@cluster0.orop2ex.mongodb.net/TurboLotteryDB?retryWrites=true&w=majority'),
         ],
         controllers: [app_controller_1.AppController],
@@ -1427,6 +1433,13 @@ module.exports = require("@nestjs/passport");
 
 /***/ }),
 
+/***/ "@nestjs/serve-static":
+/***/ ((module) => {
+
+module.exports = require("@nestjs/serve-static");
+
+/***/ }),
+
 /***/ "@nestjs/websockets":
 /***/ ((module) => {
 
@@ -1480,6 +1493,13 @@ module.exports = require("socket.io");
 /***/ ((module) => {
 
 module.exports = require("tslib");
+
+/***/ }),
+
+/***/ "path":
+/***/ ((module) => {
+
+module.exports = require("path");
 
 /***/ })
 
