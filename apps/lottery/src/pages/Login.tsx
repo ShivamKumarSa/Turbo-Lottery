@@ -54,15 +54,16 @@ const Login = () => {
         localStorage.setItem('userId', response.data.id);
         if (response.data.isAdmin) {
           localStorage.setItem('userType', 'Admin');
+          navigate('/adminDashboard/ticket');
         } else {
           localStorage.setItem('userType', 'User');
+          navigate('/dashboard');
         }
         enqueueSnackbar('Successfully Logged In', {
           preventDuplicate: true,
           variant: 'success',
           anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
         });
-        navigate('/');
       }
     } catch (error) {
       enqueueSnackbar(`${error}`, {
