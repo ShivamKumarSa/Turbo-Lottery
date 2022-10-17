@@ -4,22 +4,26 @@ import * as ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './app/app';
 import { Helmet } from 'react-helmet';
-import Login from './pages/Login';
-import theme from './styles/theme';
+
 import { Provider } from 'react-redux';
 import store from './store';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
+
 import Navbar from './components/Navbar';
-import PublicAuth from './Authentication/PublicAuth';
+
 import UserAuth from './Authentication/UserAuth';
 import './main.css';
 import Logo from './Images/TLotteryLogo.png';
-import AdminDashboard from './pages/AdminDashboard';
+
 import AdminAuth from './Authentication/AdminAuth';
 import AdminDashboardUserView from './pages/AdminDashboardUserView';
 import { SnackbarProvider } from 'notistack';
 import ErrorPage from './pages/ErrorPage';
+import PublicAuth from './Authentication/PublicAuth';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import theme from './styles/theme';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
