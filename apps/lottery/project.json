@@ -15,7 +15,10 @@
         "main": "apps/lottery/src/main.tsx",
         "polyfills": "apps/lottery/src/polyfills.ts",
         "tsConfig": "apps/lottery/tsconfig.app.json",
-        "assets": ["apps/lottery/src/favicon.ico", "apps/lottery/src/assets"],
+        "assets": [
+          "apps/lottery/src/assets/TLotteryLogo.png",
+          "apps/lottery/src/assets"
+        ],
         "styles": ["apps/lottery/src/styles.css"],
         "scripts": [],
         "webpackConfig": "@nrwl/react/plugins/webpack"
