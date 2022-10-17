@@ -5,8 +5,9 @@
   "scripts": {
     "start": "nx serve",
     "heroku-postbuild": "nx build $PROJECT_NAME --prod",
+    "test": "nx test",
     "build": "nx build",
-    "test": "nx test"
+    "build:deploy": "env-cmd -f .env npm run build  && firebase deploy -P turbo-lottery"
   },
   "private": true,
   "dependencies": {
@@ -81,6 +82,7 @@
     "@typescript-eslint/parser": "^5.36.1",
     "babel-jest": "28.1.1",
     "cypress": "^10.7.0",
+    "env-cmd": "^10.1.0",
     "eslint": "~8.15.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.10.3",

@@ -1,18 +1,19 @@
 import { Box, Typography } from '@mui/material';
 import { useEffect } from 'react';
-import theme from '../styles/theme';
+
 import { useNavigate } from 'react-router-dom';
 import bg from '../Images/home-bg.png';
 import logo from '../Images/TLotteryLogo.png';
 import logoShaper from '../Images/logo-shaper.png';
+import theme from '../styles/theme';
 
 export function App() {
-  const navigate = useNavigate();
-  useEffect(() => {
-    setTimeout(() => {
-      navigate('/login');
-    }, 8000);
-  }, []);
+  // const navigate = useNavigate();
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     navigate('/login');
+  //   }, 8000);
+  // }, []);
   return (
     <Box
       sx={{
