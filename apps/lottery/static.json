@@ -2,10 +2,5 @@
   "root": "dist/apps/lottery/",
   "routes": {
     "/**/*.html": "index.html"
-  },
-  "proxies": {
-    "/api/": {
-      "origin": "https://turbo-lottery.herokuapp.com"
-    }
   }
 }
