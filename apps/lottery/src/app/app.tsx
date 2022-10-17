@@ -8,13 +8,13 @@ import logoShaper from '../Images/logo-shaper.png';
 import theme from '../styles/theme';
 
 export function App() {
-  const navigate = useNavigate();
-  localStorage.setItem('userType', 'LoggedOut');
-  useEffect(() => {
-    setTimeout(() => {
-      navigate('/login');
-    }, 5000);
-  }, []);
+  // const navigate = useNavigate();
+  // localStorage.setItem('userType', 'LoggedOut');
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     navigate('/login');
+  //   }, 5000);
+  // }, []);
   return (
     <Box
       sx={{
