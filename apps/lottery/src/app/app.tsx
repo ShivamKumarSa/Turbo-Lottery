@@ -9,6 +9,7 @@ import theme from '../styles/theme';
 
 export function App() {
   const navigate = useNavigate();
+  localStorage.setItem('userType', 'LoggedOut');
   useEffect(() => {
     setTimeout(() => {
       navigate('/login');
