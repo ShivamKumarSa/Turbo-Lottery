@@ -7,7 +7,7 @@
     "heroku-postbuild": "nx build $PROJECT_NAME --prod",
     "test": "nx test",
     "build": "nx build",
-    "build:deploy": "env-cmd -f .env npm run build  && firebase deploy -P turbolottery-fb456"
+    "build:deploy": "env-cmd -f .env nx build lottery  && firebase deploy -P turbolottery-fb456"
   },
   "private": true,
   "dependencies": {
