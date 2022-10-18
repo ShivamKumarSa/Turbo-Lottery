@@ -63,15 +63,15 @@ export function App() {
             }}
           >
             Online Lottery Platform
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 'medium',
-                color: `${theme.palette.primary.contrastText}55`,
-              }}
-            >
-              Try Your Luck! Buy Lotteries.
-            </Typography>
+          </Typography>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 'medium',
+              color: `${theme.palette.primary.contrastText}55`,
+            }}
+          >
+            Try Your Luck! Buy Lotteries.
           </Typography>
         </Box>
       </Box>

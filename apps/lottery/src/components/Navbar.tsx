@@ -29,7 +29,7 @@ const Navbar = () => {
   const { enqueueSnackbar } = useSnackbar();
   const userId = localStorage.getItem('userId');
   const userType = localStorage.getItem('userType');
-  const [points, setPoints] = React.useState<number>();
+  const [points, setPoints] = React.useState<number>(0);
   const [socket, setSocket] = React.useState<any>(null);
   const [open, setOpen] = React.useState(false);
   const [ConfirmOpen, confirmSetOpen] = React.useState(false);

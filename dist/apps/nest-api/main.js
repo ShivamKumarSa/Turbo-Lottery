@@ -1526,7 +1526,7 @@ const core_1 = __webpack_require__("@nestjs/core");
 const app_module_1 = __webpack_require__("./apps/nest-api/src/app/app.module.ts");
 function bootstrap() {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        const app = yield core_1.NestFactory.create(app_module_1.AppModule);
+        const app = yield core_1.NestFactory.create(app_module_1.AppModule, { cors: true });
         // const globalPrefix = 'api';
         // app.setGlobalPrefix(globalPrefix);
         app.useGlobalPipes(new common_1.ValidationPipe({
