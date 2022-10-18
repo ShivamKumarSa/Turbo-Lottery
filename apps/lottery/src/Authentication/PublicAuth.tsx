@@ -13,7 +13,10 @@ const PublicAuth = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/adminDashboard/ticket" />;
   }
   // console.log('redirecting to User.......');
-  return <Navigate to="/dashboard" />;
+  if (userType === 'User') {
+    return <Navigate to="/dashboard" />;
+  }
+  return children;
 };
 
 export default PublicAuth;

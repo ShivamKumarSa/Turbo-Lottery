@@ -10,10 +10,11 @@ import theme from '../styles/theme';
 const Ticket = ({ data }: any) => {
   const [open, setOpen] = React.useState(false);
   const [ActivePlayers, setActivePlayers] = React.useState<string[]>([]);
+
   const [socket, setSocket] = React.useState<any>(null);
   const [points, setPoints] = React.useState(0);
   const userId = localStorage.getItem('userId');
-  const [timer, setTimer] = React.useState<number>();
+  const [timer, setTimer] = React.useState<number>(data.timer);
   const [message, setMessage] = React.useState<string>('');
   const [ConfirmOpen, confirmSetOpen] = React.useState(false);
 
@@ -26,6 +27,7 @@ const Ticket = ({ data }: any) => {
   };
 
   useEffect(() => {
+    ActivePlayers.length = data.maxplayers;
     const newSocket = io(`${process.env['NX_REACT_APP_BACKEND']}`);
     setSocket(newSocket);
   }, []);
