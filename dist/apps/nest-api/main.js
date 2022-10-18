@@ -1532,7 +1532,10 @@ function bootstrap() {
         app.useGlobalPipes(new common_1.ValidationPipe({
             whitelist: true,
         }));
-        app.enableCors();
+        app.enableCors({
+            origin: [`${process.env.NX_FRONT}`, `${process.env.NX_FRONTEND}`],
+            credentials: true,
+        });
         const port = process.env.PORT || 3340;
         yield app.listen(port);
         common_1.Logger.log(`🚀 Application is running on: http://localhost:${port}`);
