@@ -38,7 +38,7 @@ export class TicketController {
     @Param('ticketId') ticketId: string,
     @Body() updateTicketDto: UpdateTicketDto
   ) {
-    return await this.ticketService.updatePriority(ticketId, updateTicketDto);
+    return await this.ticketService.update(ticketId, updateTicketDto);
   }
 
   @Delete(':ticketId')

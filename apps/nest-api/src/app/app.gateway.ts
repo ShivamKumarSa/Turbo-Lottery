@@ -9,6 +9,7 @@ import { UserService } from './user/user.service';
 import { Server } from 'socket.io';
 import { TicketService } from './ticket/ticket.service';
 import { InternalServerErrorException } from '@nestjs/common';
+import { messageEnum } from '@turbo-lottery/data';
 
 @WebSocketGateway({ cors: true })
 export class AppGateway {
@@ -95,25 +96,27 @@ export class AppGateway {
           'message',
           `Players are full for this lottery ticket`,
           ticketId,
-          userId
+          userId,
+          messageEnum.invalid
         );
-        const intvl = setInterval(() => {
-          this.server.sockets.emit('message', '', ticketId, userId);
-          clearInterval(intvl);
-        }, 10000);
+        // const intvl = setInterval(() => {
+        //   this.server.sockets.emit('message', '', ticketId, userId);
+        //   clearInterval(intvl);
+        // }, 10000);
       } else {
         if (ticket.participants.includes(userId)) {
           this.server.sockets.emit(
             'message',
             `You are already a part of this lottery`,
             ticketId,
-            userId
+            userId,
+            messageEnum.invalid
           );
 
-          const intvl = setInterval(() => {
-            this.server.sockets.emit('message', '', ticketId, userId);
-            clearInterval(intvl);
-          }, 10000);
+          // const intvl = setInterval(() => {
+          //   this.server.sockets.emit('message', '', ticketId, userId);
+          //   clearInterval(intvl);
+          // }, 10000);
         } else {
           // if (ticket.participants.length === 0) {
           //   // this.server.sockets.emit('winner', '');
@@ -184,10 +187,11 @@ export class AppGateway {
                 const winner = await this.userService.get(winnerId);
 
                 this.server.sockets.emit(
-                  'winner',
+                  'message',
                   `Congratulations ${winner.username} you are the winner of `,
+                  ticketId,
                   `${winner._id}`,
-                  ticketId
+                  messageEnum.winner
                 );
                 // const intvl = setInterval(() => {
                 //   this.server.sockets.emit('winner', '', `${winner._id}`);
@@ -195,10 +199,11 @@ export class AppGateway {
                 // }, 5000);
 
                 this.server.sockets.emit(
-                  'public',
+                  'message',
                   `${winner.username} is the winner of `,
+                  ticketId,
                   `${winner._id}`,
-                  ticketId
+                  messageEnum.message
                 );
                 // const intvl2 = setInterval(() => {
                 //   this.server.sockets.emit('public', '', `${winner._id}`);

@@ -45,8 +45,11 @@ const Dashboard = () => {
         <Box sx={{ m: '40px 20px' }}>
           <Grid container spacing={3} /* justifyContent="space-between" */>
             {[...response.data]
-              .sort((a: ticketInterface, b: ticketInterface) => {
-                return a.priority - b.priority;
+              // .sort((a: ticketInterface, b: ticketInterface) => {
+              //   return a.priority - b.priority;
+              // })
+              .filter((ticket: ticketInterface) => {
+                return ticket.active === true;
               })
               .map((ticket: ticketInterface) => (
                 <Ticket data={ticket} key={ticket._id} />

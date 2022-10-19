@@ -13,7 +13,7 @@ export function App() {
   useEffect(() => {
     setTimeout(() => {
       navigate('/login');
-    }, 5000);
+    }, 15000);
   }, []);
   return (
     <Box

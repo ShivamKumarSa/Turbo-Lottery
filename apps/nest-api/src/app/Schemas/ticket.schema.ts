@@ -6,7 +6,7 @@ export const ticketSchema = new mongoose.Schema<ticketInterface>({
   price: { type: Number, required: true, default: 100 },
   maxplayers: { type: Number, required: true, default: 5 },
   ticketName: { type: String, required: true, unique: true },
-  priority: { type: Number, required: true, default: 10 },
+  active: { type: Boolean, required: true, default: true },
   timer: { type: Number, required: true, default: 10 },
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: userSchema }],
   ticketHistory: {

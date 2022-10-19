@@ -25,6 +25,7 @@ import { numberGeneralSchema, ticketNameSchema } from '../validationSchema';
 import ChangePriorityForm from '../components/ChangePriorityForm';
 import { ticketInterface } from '@turbo-lottery/data';
 import { useSnackbar } from 'notistack';
+import UpdateTicketForm from '../components/UpdateTicketForm';
 
 interface formDetailsInterface {
   heading: string;
@@ -41,8 +42,8 @@ const AdminDashboard = () => {
     ticketName: ticketNameSchema,
     price: numberGeneralSchema('Price'),
     maxplayers: numberGeneralSchema('Players'),
-    timer: numberGeneralSchema('Timer'),
-    priority: numberGeneralSchema('Priority'),
+    // timer: numberGeneralSchema('Timer'),
+    // priority: numberGeneralSchema('Priority'),
   });
 
   const methods = useForm({
@@ -86,10 +87,10 @@ const AdminDashboard = () => {
     }
   };
   const formDetails: formDetailsInterface[] = [
-    { heading: 'Price', value: 100, name: 'price' },
-    { heading: 'Maximum Players', value: 5, name: 'maxplayers' },
-    { heading: 'Timer', value: 10, name: 'timer' },
-    { heading: 'Priority', value: 10, name: 'priority' },
+    { heading: 'Amount', value: 100, name: 'price' },
+    { heading: 'Players', value: 5, name: 'maxplayers' },
+    // { heading: 'Timer', value: 10, name: 'timer' },
+    // { heading: 'Priority', value: 10, name: 'priority' },
   ];
   if (response?.data) {
     return (
@@ -99,9 +100,14 @@ const AdminDashboard = () => {
             Create New Ticket
           </Button>
         </Box>
-        <Grid container spacing={3}>
+        {/* <Grid container spacing={3}>
           {response.data.map((ticket: ticketInterface) => (
             <ChangePriorityForm ticket={ticket} key={ticket._id} />
+          ))}
+        </Grid> */}
+        <Grid container spacing={3}>
+          {response.data.map((ticket: ticketInterface) => (
+            <UpdateTicketForm ticket={ticket} key={ticket._id} />
           ))}
         </Grid>
         <Dialog fullWidth open={open} onClose={handleClose}>

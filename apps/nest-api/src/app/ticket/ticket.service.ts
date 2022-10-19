@@ -28,7 +28,7 @@ export class TicketService {
         price: body.price,
         maxplayers: body.maxplayers,
         ticketName: body.ticketName,
-        priority: body.priority,
+        active: body.active,
         timer: body.timer,
       });
       const savedTicket = await ticket.save();
@@ -88,15 +88,15 @@ export class TicketService {
       throw new InternalServerErrorException(error);
     }
   }
-  async updatePriority(ticketId: string, body: UpdateTicketDto) {
-    try {
-      const ticket = await this.update(ticketId, body);
-      const { ticketName, priority } = ticket;
-      return { ticketName, priority };
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
+  // async updatePriority(ticketId: string, body: UpdateTicketDto) {
+  //   try {
+  //     const ticket = await this.update(ticketId, body);
+  //     const { ticketName, priority } = ticket;
+  //     return { ticketName, priority };
+  //   } catch (error) {
+  //     throw new InternalServerErrorException(error);
+  //   }
+  // }
 
   async delete(ticketId: string) {
     this.checkId(ticketId);

@@ -58,13 +58,7 @@ const ChangePriorityForm = ({ ticket }: any) => {
   return (
     <Grid item xs={12} md={6} lg={4}>
       <Card raised sx={{ border: `2px solid ${theme.palette.primary.dark}` }}>
-        <CardContent
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
+        <CardContent>
           <TicketCard data={ticket}>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <TextField

@@ -108,7 +108,11 @@ const Login = () => {
             spacing={1}
             sx={{ display: 'flex', flexDirection: 'column', p: '40px' }}
           >
-            <LoginForm register={register} errors={errors} />
+            <LoginForm
+              register={register}
+              errors={errors}
+              registerBool={false}
+            />
             <Grid
               item
               mt={3}

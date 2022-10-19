@@ -41,6 +41,6 @@ export const ticketNameSchema = Yup.string()
   .required('Ticket Name is required')
   .trim("Ticket can't include lead/trailing spaces")
   .strict(true)
-  .matches(/^[A-Za-z ]*$/, 'Please enter a valid Ticket Name')
+  .matches(/^[A-Za-z0-9 ]*$/, 'Please enter a valid Ticket Name')
   .min(2, 'Ticket Name must be at least 2 characters')
   .max(30, 'Ticket Name must not exceed 30 characters');

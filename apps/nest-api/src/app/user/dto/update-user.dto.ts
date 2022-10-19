@@ -1,5 +1,6 @@
 import { creditHistoryInterface, userInterface } from '@turbo-lottery/data';
 import {
+  IsBoolean,
   IsInt,
   IsOptional,
   IsPositive,
@@ -25,6 +26,7 @@ export class UpdateUserDto implements userInterface {
   @IsOptional()
   credit: number;
 
+  @IsBoolean()
   @IsOptional()
   isAdmin: boolean;
 

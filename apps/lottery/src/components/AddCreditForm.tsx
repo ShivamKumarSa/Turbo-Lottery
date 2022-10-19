@@ -21,9 +21,9 @@ const AddCreditForm = ({ user, id }: addCreditFormInterface) => {
   const validationSchema = Yup.object().shape({
     credit: Yup.number()
       .typeError('Please enter a valid credit')
-      .integer('Priority can only be integer')
+      .integer('Credit can only be integer')
       .positive("Credit can't be negative")
-      .min(1, 'Minimum credit can be 1')
+      .min(0, 'Minimum credit can be 1')
       .required('Please enter the credit'),
   });
   const methods = useForm({

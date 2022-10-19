@@ -82,8 +82,11 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:first-of-type': {
+  '&:first-child td': {
+    color: theme.palette.secondary.dark,
     backgroundColor: theme.palette.action.hover,
+    fontWeight: 600,
+    fontFamily: 'Courier New',
   },
   '&:last-child td, &:last-child th': {
     border: 0,

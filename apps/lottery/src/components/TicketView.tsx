@@ -88,11 +88,15 @@ const TicketView = ({
               }}
             >
               <Paper
-                elevation={2}
+                elevation={4}
                 sx={{
                   p: '25px',
                   mt: '20px',
                   width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '10px',
                 }}
               >
                 <Box
@@ -130,10 +134,16 @@ const TicketView = ({
                   sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: 'flex-start',
                   }}
                 >
-                  <Box>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '5px',
+                    }}
+                  >
                     <Typography variant="h5" sx={{ fontWeight: '500' }}>
                       {data.maxplayers - ActivePlayers.length}
                       <span style={{ fontWeight: '400' }}> out of </span>
@@ -144,10 +154,10 @@ const TicketView = ({
                       </span>
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: '500' }}>
-                      Price:&nbsp;&nbsp;
+                      Amount:&nbsp;&nbsp;
                       <span style={{ fontWeight: '700' }}>{data.price}</span>
                     </Typography>
-                    <Box sx={{ mt: '20px' }}>
+                    <Box sx={{ mt: '10px' }}>
                       {ActivePlayers.filter((value: string) => {
                         return value === userId;
                       }).length > 0 ||
@@ -172,7 +182,7 @@ const TicketView = ({
                   </Box>
                   <Box>
                     <Typography
-                      variant="h4"
+                      variant="h2"
                       sx={{
                         display: 'flex',
                         justifyContent: 'center',
@@ -181,7 +191,7 @@ const TicketView = ({
                     >
                       {data.price * data.maxplayers}
                     </Typography>
-                    <Typography variant="h6">Reward Price</Typography>
+                    <Typography variant="h5">Reward Price</Typography>
                   </Box>
                 </Box>
               </Paper>

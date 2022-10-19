@@ -14,7 +14,7 @@ exports.ticketSchema = new mongoose_1.default.Schema({
     price: { type: Number, required: true, default: 100 },
     maxplayers: { type: Number, required: true, default: 5 },
     ticketName: { type: String, required: true, unique: true },
-    priority: { type: Number, required: true, default: 10 },
+    active: { type: Boolean, required: true, default: true },
     timer: { type: Number, required: true, default: 10 },
     participants: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: user_schema_1.userSchema }],
     ticketHistory: {
@@ -99,6 +99,7 @@ const user_service_1 = __webpack_require__("./apps/nest-api/src/app/user/user.se
 const socket_io_1 = __webpack_require__("socket.io");
 const ticket_service_1 = __webpack_require__("./apps/nest-api/src/app/ticket/ticket.service.ts");
 const common_1 = __webpack_require__("@nestjs/common");
+const data_1 = __webpack_require__("./libs/data/src/index.ts");
 let AppGateway = class AppGateway {
     constructor(appService, userService, ticketService) {
         this.appService = appService;
@@ -158,19 +159,19 @@ let AppGateway = class AppGateway {
                 //   console.log(userId);
                 //   console.log(ticket);
                 if (ticket.participants.length >= ticket.maxplayers) {
-                    this.server.sockets.emit('message', `Players are full for this lottery ticket`, ticketId, userId);
-                    const intvl = setInterval(() => {
-                        this.server.sockets.emit('message', '', ticketId, userId);
-                        clearInterval(intvl);
-                    }, 10000);
+                    this.server.sockets.emit('message', `Players are full for this lottery ticket`, ticketId, userId, data_1.messageEnum.invalid);
+                    // const intvl = setInterval(() => {
+                    //   this.server.sockets.emit('message', '', ticketId, userId);
+                    //   clearInterval(intvl);
+                    // }, 10000);
                 }
                 else {
                     if (ticket.participants.includes(userId)) {
-                        this.server.sockets.emit('message', `You are already a part of this lottery`, ticketId, userId);
-                        const intvl = setInterval(() => {
-                            this.server.sockets.emit('message', '', ticketId, userId);
-                            clearInterval(intvl);
-                        }, 10000);
+                        this.server.sockets.emit('message', `You are already a part of this lottery`, ticketId, userId, data_1.messageEnum.invalid);
+                        // const intvl = setInterval(() => {
+                        //   this.server.sockets.emit('message', '', ticketId, userId);
+                        //   clearInterval(intvl);
+                        // }, 10000);
                     }
                     else {
                         // if (ticket.participants.length === 0) {
@@ -214,12 +215,12 @@ let AppGateway = class AppGateway {
                                             updateTicket.participants[Math.floor(Math.random() * updateTicket.maxplayers)];
                                     }
                                     const winner = yield this.userService.get(winnerId);
-                                    this.server.sockets.emit('winner', `Congratulations ${winner.username} you are the winner of `, `${winner._id}`, ticketId);
+                                    this.server.sockets.emit('message', `Congratulations ${winner.username} you are the winner of `, ticketId, `${winner._id}`, data_1.messageEnum.winner);
                                     // const intvl = setInterval(() => {
                                     //   this.server.sockets.emit('winner', '', `${winner._id}`);
                                     //   clearInterval(intvl);
                                     // }, 5000);
-                                    this.server.sockets.emit('public', `${winner.username} is the winner of `, `${winner._id}`, ticketId);
+                                    this.server.sockets.emit('message', `${winner.username} is the winner of `, ticketId, `${winner._id}`, data_1.messageEnum.message);
                                     // const intvl2 = setInterval(() => {
                                     //   this.server.sockets.emit('public', '', `${winner._id}`);
                                     //   clearInterval(intvl2);
@@ -682,11 +683,9 @@ tslib_1.__decorate([
 ], CreateTicketDto.prototype, "maxplayers", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
-    tslib_1.__metadata("design:type", Number)
-], CreateTicketDto.prototype, "priority", void 0);
+    (0, class_validator_1.IsBoolean)(),
+    tslib_1.__metadata("design:type", Boolean)
+], CreateTicketDto.prototype, "active", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
@@ -698,7 +697,7 @@ tslib_1.__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(2),
     (0, class_validator_1.MaxLength)(30),
-    (0, class_validator_1.Matches)(/^[A-Za-z ]*$/),
+    (0, class_validator_1.Matches)(/^[A-Za-z0-9 ]*$/),
     tslib_1.__metadata("design:type", String)
 ], CreateTicketDto.prototype, "ticketName", void 0);
 exports.CreateTicketDto = CreateTicketDto;
@@ -732,11 +731,9 @@ tslib_1.__decorate([
 ], UpdateTicketDto.prototype, "maxplayers", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
-    tslib_1.__metadata("design:type", Number)
-], UpdateTicketDto.prototype, "priority", void 0);
+    (0, class_validator_1.IsBoolean)(),
+    tslib_1.__metadata("design:type", Boolean)
+], UpdateTicketDto.prototype, "active", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
@@ -748,7 +745,7 @@ tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.MinLength)(2),
     (0, class_validator_1.MaxLength)(30),
-    (0, class_validator_1.Matches)(/^[A-Za-z ]*$/),
+    (0, class_validator_1.Matches)(/^[A-Za-z0-9 ]*$/),
     tslib_1.__metadata("design:type", String)
 ], UpdateTicketDto.prototype, "ticketName", void 0);
 tslib_1.__decorate([
@@ -798,7 +795,7 @@ let TicketController = class TicketController {
     }
     updateTicket(ticketId, updateTicketDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.ticketService.updatePriority(ticketId, updateTicketDto);
+            return yield this.ticketService.update(ticketId, updateTicketDto);
         });
     }
     deleteUser(ticketId) {
@@ -908,7 +905,7 @@ let TicketService = class TicketService {
                     price: body.price,
                     maxplayers: body.maxplayers,
                     ticketName: body.ticketName,
-                    priority: body.priority,
+                    active: body.active,
                     timer: body.timer,
                 });
                 const savedTicket = yield ticket.save();
@@ -975,18 +972,15 @@ let TicketService = class TicketService {
             }
         });
     }
-    updatePriority(ticketId, body) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            try {
-                const ticket = yield this.update(ticketId, body);
-                const { ticketName, priority } = ticket;
-                return { ticketName, priority };
-            }
-            catch (error) {
-                throw new common_1.InternalServerErrorException(error);
-            }
-        });
-    }
+    // async updatePriority(ticketId: string, body: UpdateTicketDto) {
+    //   try {
+    //     const ticket = await this.update(ticketId, body);
+    //     const { ticketName, priority } = ticket;
+    //     return { ticketName, priority };
+    //   } catch (error) {
+    //     throw new InternalServerErrorException(error);
+    //   }
+    // }
     delete(ticketId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.checkId(ticketId);
@@ -1092,6 +1086,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", Number)
 ], UpdateUserDto.prototype, "credit", void 0);
 tslib_1.__decorate([
+    (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", Boolean)
 ], UpdateUserDto.prototype, "isAdmin", void 0);
@@ -1388,6 +1383,37 @@ UserService = tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
 ], UserService);
 exports.UserService = UserService;
+
+
+/***/ }),
+
+/***/ "./libs/data/src/index.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const tslib_1 = __webpack_require__("tslib");
+tslib_1.__exportStar(__webpack_require__("./libs/data/src/lib/data.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./libs/data/src/lib/data.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.messageEnum = exports.data = void 0;
+function data() {
+    return 'data';
+}
+exports.data = data;
+var messageEnum;
+(function (messageEnum) {
+    messageEnum[messageEnum["winner"] = 0] = "winner";
+    messageEnum[messageEnum["invalid"] = 1] = "invalid";
+    messageEnum[messageEnum["message"] = 2] = "message";
+})(messageEnum = exports.messageEnum || (exports.messageEnum = {}));
 
 
 /***/ }),

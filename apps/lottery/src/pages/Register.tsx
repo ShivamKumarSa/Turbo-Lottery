@@ -41,19 +41,6 @@ const Register = () => {
 
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const [showConfirmPassword, changeConfirmPasswordVisibility] =
-    React.useState<boolean>(false);
-
-  const handleClickChangeConfirmPassword = () => {
-    changeConfirmPasswordVisibility(!showConfirmPassword);
-  };
-
-  const handleCopy = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-  };
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-  };
 
   const methods = useForm({
     resolver: yupResolver(validationSchema),
@@ -133,48 +120,12 @@ const Register = () => {
             spacing={1}
             sx={{ display: 'flex', flexDirection: 'column', p: '40px' }}
           >
-            <LoginForm register={register} errors={errors} />
-            <Grid item>
-              <Typography variant="h5">Confirm Password</Typography>
-            </Grid>
-            <Grid item>
-              <TextField
-                required
-                placeholder="Enter Confirm Password"
-                onCopy={handleCopy}
-                onPaste={handlePaste}
-                type={showConfirmPassword ? 'text' : 'password'}
-                fullWidth
-                margin="dense"
-                {...register('confirmPassword')}
-                error={errors['confirmPassword'] ? true : false}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleClickChangeConfirmPassword}
-                        aria-label="toggle password visibility"
-                        edge="end"
-                        sx={{ color: theme.palette.primary.light }}
-                      >
-                        {showConfirmPassword ? (
-                          <VisibilityOff />
-                        ) : (
-                          <Visibility />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              {errors['confirmPassword'] ? (
-                <span style={{ color: `${theme.palette.error.main}` }}>
-                  <ErrorMessage errors={errors} name="confirmPassword" />
-                </span>
-              ) : (
-                <span>&nbsp;</span>
-              )}
-            </Grid>
+            <LoginForm
+              register={register}
+              errors={errors}
+              registerBool={true}
+            />
+
             <Grid
               item
               mt={3}
