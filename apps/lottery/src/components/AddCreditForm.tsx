@@ -1,6 +1,13 @@
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, TableCell, TableRow, TextField } from '@mui/material';
+import {
+  Button,
+  styled,
+  TableCell,
+  tableCellClasses,
+  TableRow,
+  TextField,
+} from '@mui/material';
 import * as Yup from 'yup';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import theme from '../styles/theme';
@@ -20,11 +27,11 @@ const AddCreditForm = ({ user, id }: addCreditFormInterface) => {
   const [ConfirmOpen, confirmSetOpen] = React.useState(false);
   const validationSchema = Yup.object().shape({
     credit: Yup.number()
-      .typeError('Please enter a valid credit')
-      .integer('Priority can only be integer')
+      .integer('Credit can only be integer')
       .positive("Credit can't be negative")
-      .min(1, 'Minimum credit can be 1')
-      .required('Please enter the credit'),
+      .min(100, 'Minimum credit can be 100')
+      .required('Please enter the credit')
+      .typeError('Please enter a valid credit'),
   });
   const methods = useForm({
     mode: 'all',
@@ -73,11 +80,10 @@ const AddCreditForm = ({ user, id }: addCreditFormInterface) => {
         />
       )}
       <TableRow>
-        <TableCell>{id}</TableCell>
-        <TableCell>{user.username}</TableCell>
-        <TableCell>{user.isAdmin ? 'true' : 'false'}</TableCell>
-        <TableCell>{user.credit}</TableCell>
-        <TableCell
+        <StyledTableCell>{id}</StyledTableCell>
+        <StyledTableCell>{user.username}</StyledTableCell>
+        <StyledTableCell>{user.credit}</StyledTableCell>
+        <StyledTableCell
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -103,15 +109,21 @@ const AddCreditForm = ({ user, id }: addCreditFormInterface) => {
           <Button
             variant="contained"
             onClick={() => {
-              confirmSetOpen(true);
+              if (!errors['credit']) confirmSetOpen(true);
             }}
           >
             Add Credit
           </Button>
-        </TableCell>
+        </StyledTableCell>
       </TableRow>
     </>
   );
 };
-
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.body}`]: {
+    // color: theme.palette.primary.contrastText,
+    fontSize: '16px',
+    textTransform: 'capitalize',
+  },
+}));
 export default AddCreditForm;

@@ -14,7 +14,7 @@ exports.ticketSchema = new mongoose_1.default.Schema({
     price: { type: Number, required: true, default: 100 },
     maxplayers: { type: Number, required: true, default: 5 },
     ticketName: { type: String, required: true, unique: true },
-    priority: { type: Number, required: true, default: 10 },
+    active: { type: Boolean, required: true, default: true },
     timer: { type: Number, required: true, default: 10 },
     participants: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: user_schema_1.userSchema }],
     ticketHistory: {
@@ -99,6 +99,7 @@ const user_service_1 = __webpack_require__("./apps/nest-api/src/app/user/user.se
 const socket_io_1 = __webpack_require__("socket.io");
 const ticket_service_1 = __webpack_require__("./apps/nest-api/src/app/ticket/ticket.service.ts");
 const common_1 = __webpack_require__("@nestjs/common");
+const data_1 = __webpack_require__("./libs/data/src/index.ts");
 let AppGateway = class AppGateway {
     constructor(appService, userService, ticketService) {
         this.appService = appService;
@@ -158,99 +159,108 @@ let AppGateway = class AppGateway {
                 //   console.log(userId);
                 //   console.log(ticket);
                 if (ticket.participants.length >= ticket.maxplayers) {
-                    this.server.sockets.emit('message', `Players are full for this lottery ticket`, ticketId, userId);
-                    const intvl = setInterval(() => {
-                        this.server.sockets.emit('message', '', ticketId, userId);
-                        clearInterval(intvl);
-                    }, 10000);
+                    this.server.sockets.emit('message', `Players are full for `, ticketId, userId, data_1.messageEnum.invalid);
+                    // const intvl = setInterval(() => {
+                    //   this.server.sockets.emit('message', '', ticketId, userId);
+                    //   clearInterval(intvl);
+                    // }, 10000);
                 }
                 else {
                     if (ticket.participants.includes(userId)) {
-                        this.server.sockets.emit('message', `You are already a part of this lottery`, ticketId, userId);
-                        const intvl = setInterval(() => {
-                            this.server.sockets.emit('message', '', ticketId, userId);
-                            clearInterval(intvl);
-                        }, 10000);
+                        this.server.sockets.emit('message', `You are already a part of`, ticketId, userId, data_1.messageEnum.invalid);
+                        // const intvl = setInterval(() => {
+                        //   this.server.sockets.emit('message', '', ticketId, userId);
+                        //   clearInterval(intvl);
+                        // }, 10000);
                     }
                     else {
                         // if (ticket.participants.length === 0) {
                         //   // this.server.sockets.emit('winner', '');
                         //   this.server.sockets.emit('public', '');
                         // }
-                        ticket.participants.push(userId);
-                        let updateTicket = yield this.ticketService.update(ticketId, ticket);
-                        // this.server.sockets.emit(
-                        //   'message',
-                        //   `3......Waiting for ${updateTicket.maxplayers} - ${updateTicket.participants.length} more users to buy this ticket`,
-                        //   ticketId
-                        // );
-                        user.credit -= ticket.price;
-                        const balance = user.credit;
-                        user.creditHistory.push({
-                            description: `Bought ${ticket.ticketName}`,
-                            transaction: `-${ticket.price}`,
-                            balance: `${balance}`,
-                        });
-                        const updateUser = yield this.userService.update(userId, user);
-                        this.server.sockets.emit('receive', updateTicket.participants, ticketId);
-                        this.server.sockets.emit('putCredit', updateUser.credit, updateUser.creditHistory, `${updateUser._id}`);
-                        if (updateTicket.participants.length === updateTicket.maxplayers) {
+                        if (ticket.active) {
+                            if (user.credit < ticket.price) {
+                                this.server.sockets.emit('message', `You have less money to buy`, ticketId, userId, data_1.messageEnum.invalid);
+                                return;
+                            }
+                            ticket.participants.push(userId);
+                            let updateTicket = yield this.ticketService.update(ticketId, ticket);
                             // this.server.sockets.emit(
                             //   'message',
-                            //   `4.....Waiting for ${updateTicket.maxplayers} - ${updateTicket.participants.length} more users to buy this tickets ticketstickkets`,
+                            //   `3......Waiting for ${updateTicket.maxplayers} - ${updateTicket.participants.length} more users to buy this ticket`,
                             //   ticketId
                             // );
-                            const d = new Date();
-                            const interval = setInterval(() => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                                updateTicket.timer -= 1;
-                                this.server.sockets.emit('timer', updateTicket.timer, ticketId);
-                                if (updateTicket.timer === 0) {
-                                    let winnerId = updateTicket.participants[Math.floor(Math.random() * updateTicket.maxplayers)];
-                                    const idWinner = yield this.userService.get(winnerId);
-                                    const previousWinnerName = updateTicket.ticketHistory[updateTicket.ticketHistory.length - 1].winner;
-                                    const previousWinner = yield this.userService.findOne(previousWinnerName);
-                                    if (previousWinner._id.equals(idWinner._id)) {
-                                        winnerId =
-                                            updateTicket.participants[Math.floor(Math.random() * updateTicket.maxplayers)];
-                                    }
-                                    const winner = yield this.userService.get(winnerId);
-                                    this.server.sockets.emit('winner', `Congratulations ${winner.username} you are the winner of `, `${winner._id}`, ticketId);
-                                    // const intvl = setInterval(() => {
-                                    //   this.server.sockets.emit('winner', '', `${winner._id}`);
-                                    //   clearInterval(intvl);
-                                    // }, 5000);
-                                    this.server.sockets.emit('public', `${winner.username} is the winner of `, `${winner._id}`, ticketId);
-                                    // const intvl2 = setInterval(() => {
-                                    //   this.server.sockets.emit('public', '', `${winner._id}`);
-                                    //   clearInterval(intvl2);
-                                    // }, 5000);
-                                    winner.credit += ticket.price * ticket.maxplayers;
-                                    const winnerBalance = winner.credit;
-                                    winner.creditHistory.push({
-                                        description: `Won ${ticket.ticketName}`,
-                                        transaction: `+${ticket.price * ticket.maxplayers}`,
-                                        balance: `${winnerBalance}`,
-                                    });
-                                    const winnerUpdated = yield this.userService.update(`${winner._id}`, winner);
-                                    this.server.sockets.emit('putCredit', winnerUpdated.credit, winnerUpdated.creditHistory, `${winner._id}`);
-                                    updateTicket.participants.splice(0, updateTicket.participants.length);
-                                    updateTicket.ticketHistory.push({
-                                        winner: `${winner.username}`,
-                                        playedOn: `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`,
-                                    });
-                                    updateTicket.timer = 10;
-                                    updateTicket = yield this.ticketService.update(`${updateTicket._id}`, updateTicket);
-                                    this.server.sockets.emit('putTicketHistory', updateTicket.ticketHistory, ticketId);
-                                    this.server.sockets.emit('receive', updateTicket.participants, ticketId);
-                                    this.server.sockets.emit('timer', updateTicket.timer, ticketId);
-                                    clearInterval(interval);
-                                    return;
-                                }
-                                // updateTicket = await this.ticketService.update(
-                                //   `${updateTicket._id}`,
-                                //   updateTicket
+                            user.credit -= ticket.price;
+                            const balance = user.credit;
+                            user.creditHistory.push({
+                                description: `Bought ${ticket.ticketName}`,
+                                transaction: `-${ticket.price}`,
+                                balance: `${balance}`,
+                            });
+                            const updateUser = yield this.userService.update(userId, user);
+                            this.server.sockets.emit('receive', updateTicket.participants, ticketId);
+                            this.server.sockets.emit('putCredit', updateUser.credit, updateUser.creditHistory, `${updateUser._id}`);
+                            if (updateTicket.participants.length === updateTicket.maxplayers) {
+                                // this.server.sockets.emit(
+                                //   'message',
+                                //   `4.....Waiting for ${updateTicket.maxplayers} - ${updateTicket.participants.length} more users to buy this tickets ticketstickkets`,
+                                //   ticketId
                                 // );
-                            }), 1000);
+                                const d = new Date();
+                                const interval = setInterval(() => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                                    updateTicket.timer -= 1;
+                                    this.server.sockets.emit('timer', updateTicket.timer, ticketId);
+                                    if (updateTicket.timer === 0) {
+                                        let winnerId = updateTicket.participants[Math.floor(Math.random() * updateTicket.maxplayers)];
+                                        const idWinner = yield this.userService.get(winnerId);
+                                        const previousWinnerName = updateTicket.ticketHistory[updateTicket.ticketHistory.length - 1].winner;
+                                        const previousWinner = yield this.userService.findOne(previousWinnerName);
+                                        if (previousWinner._id.equals(idWinner._id)) {
+                                            winnerId =
+                                                updateTicket.participants[Math.floor(Math.random() * updateTicket.maxplayers)];
+                                        }
+                                        const winner = yield this.userService.get(winnerId);
+                                        this.server.sockets.emit('message', `${winner.username} you are the winner of `, ticketId, `${winner._id}`, data_1.messageEnum.winner);
+                                        // const intvl = setInterval(() => {
+                                        //   this.server.sockets.emit('winner', '', `${winner._id}`);
+                                        //   clearInterval(intvl);
+                                        // }, 5000);
+                                        this.server.sockets.emit('message', `${winner.username} is the winner of `, ticketId, `${winner._id}`, data_1.messageEnum.message);
+                                        // const intvl2 = setInterval(() => {
+                                        //   this.server.sockets.emit('public', '', `${winner._id}`);
+                                        //   clearInterval(intvl2);
+                                        // }, 5000);
+                                        winner.credit += ticket.price * ticket.maxplayers;
+                                        const winnerBalance = winner.credit;
+                                        winner.creditHistory.push({
+                                            description: `Won ${ticket.ticketName}`,
+                                            transaction: `+${ticket.price * ticket.maxplayers}`,
+                                            balance: `${winnerBalance}`,
+                                        });
+                                        const winnerUpdated = yield this.userService.update(`${winner._id}`, winner);
+                                        this.server.sockets.emit('putCredit', winnerUpdated.credit, winnerUpdated.creditHistory, `${winner._id}`);
+                                        updateTicket.participants.splice(0, updateTicket.participants.length);
+                                        updateTicket.ticketHistory.push({
+                                            winner: `${winner.username}`,
+                                            playedOn: `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`,
+                                        });
+                                        updateTicket.timer = 10;
+                                        updateTicket = yield this.ticketService.update(`${updateTicket._id}`, updateTicket);
+                                        this.server.sockets.emit('putTicketHistory', updateTicket.ticketHistory, ticketId);
+                                        this.server.sockets.emit('receive', updateTicket.participants, ticketId);
+                                        this.server.sockets.emit('timer', updateTicket.timer, ticketId);
+                                        clearInterval(interval);
+                                        return;
+                                    }
+                                    // updateTicket = await this.ticketService.update(
+                                    //   `${updateTicket._id}`,
+                                    //   updateTicket
+                                    // );
+                                }), 1000);
+                            }
+                        }
+                        else {
+                            this.server.sockets.emit('message', 'Ticket has made disabled. Please try after some time for ', ticketId, userId, data_1.messageEnum.invalid);
                         }
                     }
                 }
@@ -490,7 +500,7 @@ AuthModule = tslib_1.__decorate([
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
                 secret: process.env.NX_SECRET_KEY,
-                signOptions: { expiresIn: '1800s' },
+                signOptions: { expiresIn: '2 days' },
             }),
         ],
         controllers: [auth_controller_1.AuthController],
@@ -524,12 +534,12 @@ let AuthService = class AuthService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const user = yield this.userService.findOne(username);
             if (!user) {
-                throw new common_1.NotFoundException('User Not Found');
+                throw new common_1.NotFoundException('Either your username or password is incorrect');
             }
             else {
                 const passwordCompare = yield bcrypt.compare(pass, user.password);
                 if (!passwordCompare) {
-                    throw new common_1.BadRequestException('Invalid credentials');
+                    throw new common_1.BadRequestException('Either your username or password is incorrect');
                 }
                 else {
                     const { _id, username, isAdmin } = user;
@@ -670,23 +680,21 @@ tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Min)(50),
     tslib_1.__metadata("design:type", Number)
 ], CreateTicketDto.prototype, "price", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Min)(2),
     tslib_1.__metadata("design:type", Number)
 ], CreateTicketDto.prototype, "maxplayers", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
-    tslib_1.__metadata("design:type", Number)
-], CreateTicketDto.prototype, "priority", void 0);
+    (0, class_validator_1.IsBoolean)(),
+    tslib_1.__metadata("design:type", Boolean)
+], CreateTicketDto.prototype, "active", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
@@ -698,7 +706,7 @@ tslib_1.__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(2),
     (0, class_validator_1.MaxLength)(30),
-    (0, class_validator_1.Matches)(/^[A-Za-z ]*$/),
+    (0, class_validator_1.Matches)(/^[A-Za-z0-9 ]*$/),
     tslib_1.__metadata("design:type", String)
 ], CreateTicketDto.prototype, "ticketName", void 0);
 exports.CreateTicketDto = CreateTicketDto;
@@ -720,23 +728,21 @@ tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Min)(50),
     tslib_1.__metadata("design:type", Number)
 ], UpdateTicketDto.prototype, "price", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Min)(2),
     tslib_1.__metadata("design:type", Number)
 ], UpdateTicketDto.prototype, "maxplayers", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
-    tslib_1.__metadata("design:type", Number)
-], UpdateTicketDto.prototype, "priority", void 0);
+    (0, class_validator_1.IsBoolean)(),
+    tslib_1.__metadata("design:type", Boolean)
+], UpdateTicketDto.prototype, "active", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
@@ -748,7 +754,7 @@ tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.MinLength)(2),
     (0, class_validator_1.MaxLength)(30),
-    (0, class_validator_1.Matches)(/^[A-Za-z ]*$/),
+    (0, class_validator_1.Matches)(/^[A-Za-z0-9 ]*$/),
     tslib_1.__metadata("design:type", String)
 ], UpdateTicketDto.prototype, "ticketName", void 0);
 tslib_1.__decorate([
@@ -798,7 +804,7 @@ let TicketController = class TicketController {
     }
     updateTicket(ticketId, updateTicketDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.ticketService.updatePriority(ticketId, updateTicketDto);
+            return yield this.ticketService.updateByAdmin(ticketId, updateTicketDto);
         });
     }
     deleteUser(ticketId) {
@@ -908,7 +914,7 @@ let TicketService = class TicketService {
                     price: body.price,
                     maxplayers: body.maxplayers,
                     ticketName: body.ticketName,
-                    priority: body.priority,
+                    active: body.active,
                     timer: body.timer,
                 });
                 const savedTicket = yield ticket.save();
@@ -956,6 +962,17 @@ let TicketService = class TicketService {
             }
         });
     }
+    updateByAdmin(ticketId, body) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const ticketBeforeUpdate = yield this.get(ticketId);
+            if (ticketBeforeUpdate.participants.length === 0) {
+                yield this.update(ticketId, body);
+            }
+            else {
+                throw new common_1.BadRequestException('Ticket contain some participants');
+            }
+        });
+    }
     update(ticketId, body) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.checkId(ticketId);
@@ -975,32 +992,37 @@ let TicketService = class TicketService {
             }
         });
     }
-    updatePriority(ticketId, body) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            try {
-                const ticket = yield this.update(ticketId, body);
-                const { ticketName, priority } = ticket;
-                return { ticketName, priority };
-            }
-            catch (error) {
-                throw new common_1.InternalServerErrorException(error);
-            }
-        });
-    }
+    // async updatePriority(ticketId: string, body: UpdateTicketDto) {
+    //   try {
+    //     const ticket = await this.update(ticketId, body);
+    //     const { ticketName, priority } = ticket;
+    //     return { ticketName, priority };
+    //   } catch (error) {
+    //     throw new InternalServerErrorException(error);
+    //   }
+    // }
     delete(ticketId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.checkId(ticketId);
-            try {
-                const ticket = yield this.ticketModel.findByIdAndDelete(ticketId);
-                if (!ticket) {
-                    throw new common_1.NotFoundException('Ticket Not Found');
+            const ticketBeforeDelete = yield this.get(ticketId);
+            if (ticketBeforeDelete.participants.length === 0 &&
+                !ticketBeforeDelete.active) {
+                try {
+                    const ticket = yield this.ticketModel.findByIdAndDelete(ticketId);
+                    if (!ticket) {
+                        throw new common_1.NotFoundException('Ticket Not Found');
+                    }
+                    else {
+                        return { msg: 'Ticket Deleted Successfully' };
+                    }
                 }
-                else {
-                    return { msg: 'Ticket Deleted Successfully' };
+                catch (error) {
+                    throw new common_1.InternalServerErrorException(error);
                 }
             }
-            catch (error) {
-                throw new common_1.InternalServerErrorException(error);
+            else {
+                throw new common_1.BadRequestException(ticketBeforeDelete.participants.length === 0
+                    ? 'Ticket is Active. Please make inactive first'
+                    : 'Ticket contain some participants');
             }
         });
     }
@@ -1048,7 +1070,7 @@ tslib_1.__decorate([
 tslib_1.__decorate([
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Min)(0),
     (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", Number)
 ], CreateUserDto.prototype, "credit", void 0);
@@ -1087,11 +1109,12 @@ tslib_1.__decorate([
 tslib_1.__decorate([
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Min)(0),
     (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", Number)
 ], UpdateUserDto.prototype, "credit", void 0);
 tslib_1.__decorate([
+    (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", Boolean)
 ], UpdateUserDto.prototype, "isAdmin", void 0);
@@ -1388,6 +1411,37 @@ UserService = tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
 ], UserService);
 exports.UserService = UserService;
+
+
+/***/ }),
+
+/***/ "./libs/data/src/index.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const tslib_1 = __webpack_require__("tslib");
+tslib_1.__exportStar(__webpack_require__("./libs/data/src/lib/data.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./libs/data/src/lib/data.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.messageEnum = exports.data = void 0;
+function data() {
+    return 'data';
+}
+exports.data = data;
+var messageEnum;
+(function (messageEnum) {
+    messageEnum[messageEnum["winner"] = 0] = "winner";
+    messageEnum[messageEnum["invalid"] = 1] = "invalid";
+    messageEnum[messageEnum["message"] = 2] = "message";
+})(messageEnum = exports.messageEnum || (exports.messageEnum = {}));
 
 
 /***/ }),

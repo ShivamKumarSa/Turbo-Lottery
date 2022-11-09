@@ -9,6 +9,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { creditHistoryInterface } from '@turbo-lottery/data';
+import { memo } from 'react';
 
 interface creditHistoryTableInterface {
   creditHistory: creditHistoryInterface[];
@@ -18,6 +19,7 @@ const CreditHistoryTable = ({
   creditHistory,
   length,
 }: creditHistoryTableInterface) => {
+  console.log('credit history table');
   return (
     <TableContainer>
       <Table>
@@ -55,9 +57,10 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     color: theme.palette.primary.dark,
     fontSize: 20,
+    textTransform: 'capitalize',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
   },
 }));
-export default CreditHistoryTable;
+export default memo(CreditHistoryTable);

@@ -3,6 +3,7 @@ import {
   appBarClasses,
   Box,
   Button,
+  CircularProgress,
   Container,
   Dialog,
   DialogTitle,
@@ -38,6 +39,8 @@ const Navbar = () => {
   const [creditHistory, setCreditHistory] = React.useState<
     creditHistoryInterface[]
   >([]);
+  const [websocketResponse, setWebsocketResponse] =
+    React.useState<boolean>(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -45,7 +48,7 @@ const Navbar = () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
-
+  console.log('navbar');
   const handleClickConfirmOpen = () => {
     confirmSetOpen(true);
   };
@@ -78,6 +81,7 @@ const Navbar = () => {
             id: string | null
           ) => {
             if (id === userId) {
+              setWebsocketResponse(true);
               setPoints(credit);
               setCreditHistory(CreditHistory);
             }
@@ -92,7 +96,7 @@ const Navbar = () => {
     localStorage.removeItem('name');
     localStorage.setItem('userType', 'LoggedOut');
     localStorage.removeItem('userId');
-    enqueueSnackbar("You've been successfully logged out", {
+    enqueueSnackbar("You've been successfully sign out", {
       preventDuplicate: true,
       variant: 'success',
       anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
@@ -106,7 +110,7 @@ const Navbar = () => {
         <ConfirmDialog
           open={ConfirmOpen}
           setOpen={confirmSetOpen}
-          heading="Do you want to logout?"
+          heading="Do you want to sign out?"
           acceptFunction={handleCloseUserMenu}
         />
       )}
@@ -205,17 +209,42 @@ const Navbar = () => {
                         }}
                       >
                         <Typography variant="h5">Credits</Typography>
-                        <Button
-                          sx={{
-                            color: 'white',
-                            p: '0px',
-                            m: 0,
-                            background: `linear-gradient(145deg,${theme.palette.secondary.dark},${theme.palette.secondary.main},${theme.palette.secondary.light});`,
-                          }}
-                          onClick={handleOpenCreditMenu}
-                        >
-                          {points}
-                        </Button>
+                        {websocketResponse && (
+                          <Button
+                            sx={{
+                              color: 'white',
+                              p: '0px',
+                              m: 0,
+                              background: `linear-gradient(145deg,${theme.palette.secondary.dark},${theme.palette.secondary.main},${theme.palette.secondary.light});`,
+                            }}
+                            onClick={handleOpenCreditMenu}
+                          >
+                            {points}
+                          </Button>
+                        )}
+                        {!websocketResponse && (
+                          <Button
+                            sx={{
+                              color: 'white',
+                              p: '0px',
+                              m: 0,
+                              background: `linear-gradient(145deg,${theme.palette.secondary.dark},${theme.palette.secondary.main},${theme.palette.secondary.light});`,
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                height: '100%',
+                                width: '100%',
+                                p: '5px',
+                              }}
+                            >
+                              <CircularProgress color="inherit" size={20} />
+                            </Box>
+                          </Button>
+                        )}
                       </Box>
 
                       {creditHistory.length > 0 && (
@@ -301,7 +330,7 @@ const Navbar = () => {
                         alignItems: 'center',
                       }}
                     >
-                      <Tooltip title="logout">
+                      <Tooltip title="Sign Out">
                         <LogoutIcon />
                       </Tooltip>
                     </Typography>
@@ -327,6 +356,7 @@ const Navbar = () => {
               sx={{
                 fontWeight: 'medium',
                 color: `${theme.palette.primary.contrastText}`,
+                textTransform: 'capitalize',
               }}
             >
               Credit Points History

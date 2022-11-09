@@ -29,18 +29,19 @@ export const stringRequired = (name: string) => {
   return Yup.string().required(`${name} is required`);
 };
 
-export const numberGeneralSchema = (name: string) => {
+export const numberGeneralSchema = (name: string, min: number) => {
   return Yup.number()
-    .typeError(`Please enter a valid ${name}`)
     .integer(`${name} can only be integer`)
     .positive(`${name} can't be negative`)
-    .min(1, `Minimum ${name} can be 1`);
+    .min(min, `Minimum ${name} can be ${min}`)
+    .required(`Please enter the ${name}`)
+    .typeError(`Please enter a valid ${name}`);
 };
 
 export const ticketNameSchema = Yup.string()
   .required('Ticket Name is required')
   .trim("Ticket can't include lead/trailing spaces")
   .strict(true)
-  .matches(/^[A-Za-z ]*$/, 'Please enter a valid Ticket Name')
+  .matches(/^[A-Za-z0-9 ]*$/, 'Please enter a valid Ticket Name')
   .min(2, 'Ticket Name must be at least 2 characters')
   .max(30, 'Ticket Name must not exceed 30 characters');

@@ -9,6 +9,7 @@ import { UserService } from './user/user.service';
 import { Server } from 'socket.io';
 import { TicketService } from './ticket/ticket.service';
 import { InternalServerErrorException } from '@nestjs/common';
+import { messageEnum } from '@turbo-lottery/data';
 
 @WebSocketGateway({ cors: true })
 export class AppGateway {
@@ -93,174 +94,206 @@ export class AppGateway {
       if (ticket.participants.length >= ticket.maxplayers) {
         this.server.sockets.emit(
           'message',
-          `Players are full for this lottery ticket`,
+          `Players are full for `,
           ticketId,
-          userId
+          userId,
+          messageEnum.invalid
         );
-        const intvl = setInterval(() => {
-          this.server.sockets.emit('message', '', ticketId, userId);
-          clearInterval(intvl);
-        }, 10000);
+        // const intvl = setInterval(() => {
+        //   this.server.sockets.emit('message', '', ticketId, userId);
+        //   clearInterval(intvl);
+        // }, 10000);
       } else {
         if (ticket.participants.includes(userId)) {
           this.server.sockets.emit(
             'message',
-            `You are already a part of this lottery`,
+            `You are already a part of`,
             ticketId,
-            userId
+            userId,
+            messageEnum.invalid
           );
 
-          const intvl = setInterval(() => {
-            this.server.sockets.emit('message', '', ticketId, userId);
-            clearInterval(intvl);
-          }, 10000);
+          // const intvl = setInterval(() => {
+          //   this.server.sockets.emit('message', '', ticketId, userId);
+          //   clearInterval(intvl);
+          // }, 10000);
         } else {
           // if (ticket.participants.length === 0) {
           //   // this.server.sockets.emit('winner', '');
           //   this.server.sockets.emit('public', '');
           // }
-          ticket.participants.push(userId);
-          let updateTicket = await this.ticketService.update(ticketId, ticket);
-          // this.server.sockets.emit(
-          //   'message',
-          //   `3......Waiting for ${updateTicket.maxplayers} - ${updateTicket.participants.length} more users to buy this ticket`,
-          //   ticketId
-          // );
-          user.credit -= ticket.price;
-          const balance = user.credit;
-
-          user.creditHistory.push({
-            description: `Bought ${ticket.ticketName}`,
-            transaction: `-${ticket.price}`,
-            balance: `${balance}`,
-          });
-
-          const updateUser = await this.userService.update(userId, user);
-          this.server.sockets.emit(
-            'receive',
-            updateTicket.participants,
-            ticketId
-          );
-          this.server.sockets.emit(
-            'putCredit',
-            updateUser.credit,
-            updateUser.creditHistory,
-            `${updateUser._id}`
-          );
-          if (updateTicket.participants.length === updateTicket.maxplayers) {
+          if (ticket.active) {
+            if (user.credit < ticket.price) {
+              this.server.sockets.emit(
+                'message',
+                `You have less money to buy`,
+                ticketId,
+                userId,
+                messageEnum.invalid
+              );
+              return;
+            }
+            ticket.participants.push(userId);
+            let updateTicket = await this.ticketService.update(
+              ticketId,
+              ticket
+            );
             // this.server.sockets.emit(
             //   'message',
-            //   `4.....Waiting for ${updateTicket.maxplayers} - ${updateTicket.participants.length} more users to buy this tickets ticketstickkets`,
+            //   `3......Waiting for ${updateTicket.maxplayers} - ${updateTicket.participants.length} more users to buy this ticket`,
             //   ticketId
             // );
-            const d = new Date();
-            const interval = setInterval(async () => {
-              updateTicket.timer -= 1;
-              this.server.sockets.emit('timer', updateTicket.timer, ticketId);
-              if (updateTicket.timer === 0) {
-                let winnerId =
-                  updateTicket.participants[
-                    Math.floor(Math.random() * updateTicket.maxplayers)
-                  ];
 
-                const idWinner = await this.userService.get(winnerId);
+            user.credit -= ticket.price;
+            const balance = user.credit;
 
-                const previousWinnerName =
-                  updateTicket.ticketHistory[
-                    updateTicket.ticketHistory.length - 1
-                  ].winner;
+            user.creditHistory.push({
+              description: `Bought ${ticket.ticketName}`,
+              transaction: `-${ticket.price}`,
+              balance: `${balance}`,
+            });
 
-                const previousWinner = await this.userService.findOne(
-                  previousWinnerName
-                );
-
-                if (previousWinner._id.equals(idWinner._id)) {
-                  winnerId =
+            const updateUser = await this.userService.update(userId, user);
+            this.server.sockets.emit(
+              'receive',
+              updateTicket.participants,
+              ticketId
+            );
+            this.server.sockets.emit(
+              'putCredit',
+              updateUser.credit,
+              updateUser.creditHistory,
+              `${updateUser._id}`
+            );
+            if (updateTicket.participants.length === updateTicket.maxplayers) {
+              // this.server.sockets.emit(
+              //   'message',
+              //   `4.....Waiting for ${updateTicket.maxplayers} - ${updateTicket.participants.length} more users to buy this tickets ticketstickkets`,
+              //   ticketId
+              // );
+              const d = new Date();
+              const interval = setInterval(async () => {
+                updateTicket.timer -= 1;
+                this.server.sockets.emit('timer', updateTicket.timer, ticketId);
+                if (updateTicket.timer === 0) {
+                  let winnerId =
                     updateTicket.participants[
                       Math.floor(Math.random() * updateTicket.maxplayers)
                     ];
+
+                  const idWinner = await this.userService.get(winnerId);
+
+                  const previousWinnerName =
+                    updateTicket.ticketHistory[
+                      updateTicket.ticketHistory.length - 1
+                    ].winner;
+
+                  const previousWinner = await this.userService.findOne(
+                    previousWinnerName
+                  );
+
+                  if (previousWinner._id.equals(idWinner._id)) {
+                    winnerId =
+                      updateTicket.participants[
+                        Math.floor(Math.random() * updateTicket.maxplayers)
+                      ];
+                  }
+
+                  const winner = await this.userService.get(winnerId);
+
+                  this.server.sockets.emit(
+                    'message',
+                    `${winner.username} you are the winner of `,
+                    ticketId,
+                    `${winner._id}`,
+                    messageEnum.winner
+                  );
+                  // const intvl = setInterval(() => {
+                  //   this.server.sockets.emit('winner', '', `${winner._id}`);
+                  //   clearInterval(intvl);
+                  // }, 5000);
+
+                  this.server.sockets.emit(
+                    'message',
+                    `${winner.username} is the winner of `,
+                    ticketId,
+                    `${winner._id}`,
+                    messageEnum.message
+                  );
+                  // const intvl2 = setInterval(() => {
+                  //   this.server.sockets.emit('public', '', `${winner._id}`);
+                  //   clearInterval(intvl2);
+                  // }, 5000);
+
+                  winner.credit += ticket.price * ticket.maxplayers;
+                  const winnerBalance = winner.credit;
+                  winner.creditHistory.push({
+                    description: `Won ${ticket.ticketName}`,
+                    transaction: `+${ticket.price * ticket.maxplayers}`,
+                    balance: `${winnerBalance}`,
+                  });
+
+                  const winnerUpdated = await this.userService.update(
+                    `${winner._id}`,
+                    winner
+                  );
+
+                  this.server.sockets.emit(
+                    'putCredit',
+                    winnerUpdated.credit,
+                    winnerUpdated.creditHistory,
+                    `${winner._id}`
+                  );
+
+                  updateTicket.participants.splice(
+                    0,
+                    updateTicket.participants.length
+                  );
+
+                  updateTicket.ticketHistory.push({
+                    winner: `${winner.username}`,
+                    playedOn: `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`,
+                  });
+                  updateTicket.timer = 10;
+                  updateTicket = await this.ticketService.update(
+                    `${updateTicket._id}`,
+                    updateTicket
+                  );
+
+                  this.server.sockets.emit(
+                    'putTicketHistory',
+                    updateTicket.ticketHistory,
+                    ticketId
+                  );
+
+                  this.server.sockets.emit(
+                    'receive',
+                    updateTicket.participants,
+                    ticketId
+                  );
+                  this.server.sockets.emit(
+                    'timer',
+                    updateTicket.timer,
+                    ticketId
+                  );
+                  clearInterval(interval);
+                  return;
                 }
 
-                const winner = await this.userService.get(winnerId);
-
-                this.server.sockets.emit(
-                  'winner',
-                  `Congratulations ${winner.username} you are the winner of `,
-                  `${winner._id}`,
-                  ticketId
-                );
-                // const intvl = setInterval(() => {
-                //   this.server.sockets.emit('winner', '', `${winner._id}`);
-                //   clearInterval(intvl);
-                // }, 5000);
-
-                this.server.sockets.emit(
-                  'public',
-                  `${winner.username} is the winner of `,
-                  `${winner._id}`,
-                  ticketId
-                );
-                // const intvl2 = setInterval(() => {
-                //   this.server.sockets.emit('public', '', `${winner._id}`);
-                //   clearInterval(intvl2);
-                // }, 5000);
-
-                winner.credit += ticket.price * ticket.maxplayers;
-                const winnerBalance = winner.credit;
-                winner.creditHistory.push({
-                  description: `Won ${ticket.ticketName}`,
-                  transaction: `+${ticket.price * ticket.maxplayers}`,
-                  balance: `${winnerBalance}`,
-                });
-
-                const winnerUpdated = await this.userService.update(
-                  `${winner._id}`,
-                  winner
-                );
-
-                this.server.sockets.emit(
-                  'putCredit',
-                  winnerUpdated.credit,
-                  winnerUpdated.creditHistory,
-                  `${winner._id}`
-                );
-
-                updateTicket.participants.splice(
-                  0,
-                  updateTicket.participants.length
-                );
-
-                updateTicket.ticketHistory.push({
-                  winner: `${winner.username}`,
-                  playedOn: `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`,
-                });
-                updateTicket.timer = 10;
-                updateTicket = await this.ticketService.update(
-                  `${updateTicket._id}`,
-                  updateTicket
-                );
-
-                this.server.sockets.emit(
-                  'putTicketHistory',
-                  updateTicket.ticketHistory,
-                  ticketId
-                );
-
-                this.server.sockets.emit(
-                  'receive',
-                  updateTicket.participants,
-                  ticketId
-                );
-                this.server.sockets.emit('timer', updateTicket.timer, ticketId);
-                clearInterval(interval);
-                return;
-              }
-
-              // updateTicket = await this.ticketService.update(
-              //   `${updateTicket._id}`,
-              //   updateTicket
-              // );
-            }, 1000);
+                // updateTicket = await this.ticketService.update(
+                //   `${updateTicket._id}`,
+                //   updateTicket
+                // );
+              }, 1000);
+            }
+          } else {
+            this.server.sockets.emit(
+              'message',
+              'Ticket has made disabled. Please try after some time for ',
+              ticketId,
+              userId,
+              messageEnum.invalid
+            );
           }
         }
       }

@@ -1,27 +1,38 @@
-import { Box, Button, Card, CardContent, Grid } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Grid,
+} from '@mui/material';
 import React, { useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { creditHistoryInterface } from '@turbo-lottery/data';
+import { creditHistoryInterface, messageEnum } from '@turbo-lottery/data';
 import ConfirmDialog from './ConfirmDialog';
 import TicketView from './TicketView';
 import TicketCard from './TicketCard';
 import theme from '../styles/theme';
+import { useSnackbar } from 'notistack';
 
 const Ticket = ({ data }: any) => {
   const [open, setOpen] = React.useState(false);
   const [ActivePlayers, setActivePlayers] = React.useState<string[]>([]);
-
+  const { enqueueSnackbar } = useSnackbar();
   const [socket, setSocket] = React.useState<any>(null);
   const [points, setPoints] = React.useState(0);
   const userId = localStorage.getItem('userId');
   const [timer, setTimer] = React.useState<number>(data.timer);
   const [message, setMessage] = React.useState<string>('');
+  const [MessageType, setMessageType] = React.useState<messageEnum>();
   const [ConfirmOpen, confirmSetOpen] = React.useState(false);
-
+  const [playerFilter, setPlayerFilter] = React.useState<boolean>(false);
+  const [websocketResponse, setWebsocketResponse] =
+    React.useState<boolean>(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
-
+  console.log('ticket');
   const handleClickConfirmOpen = () => {
     confirmSetOpen(true);
   };
@@ -43,17 +54,43 @@ const Ticket = ({ data }: any) => {
       socket.on(
         'receive',
         (activePlayers: string[], ticketid: string | null) => {
+          setWebsocketResponse(true);
           if (ticketid === data._id) {
             setActivePlayers(activePlayers);
+            setPlayerFilter(
+              activePlayers.filter((value) => {
+                return value === userId;
+              }).length > 0
+                ? false
+                : true
+            );
           }
         }
       );
       socket.on(
         'message',
-        (Message: string, ticketid: string | null, id: string | null) => {
+        (
+          Message: string,
+          ticketid: string | null,
+          id: string | null,
+          messageType: messageEnum
+        ) => {
           if (ticketid === data._id) {
-            if (id === userId) {
-              setMessage(Message);
+            if (messageType === 0) {
+              if (id === userId) {
+                setMessage(Message);
+                setMessageType(messageType);
+              }
+            } else if (messageType === 1) {
+              if (id === userId) {
+                setMessage(Message);
+                setMessageType(messageType);
+              }
+            } else {
+              if (id !== userId) {
+                setMessage(Message);
+                setMessageType(messageType);
+              }
             }
           }
         }
@@ -63,26 +100,26 @@ const Ticket = ({ data }: any) => {
           setTimer(Timer);
         }
       });
-      socket.on(
-        'winner',
-        (WinnerMessage: string, id: string | null, ticketId: string | null) => {
-          if (ticketId === data._id) {
-            if (id === userId) {
-              setMessage(WinnerMessage);
-            }
-          }
-        }
-      );
-      socket.on(
-        'public',
-        (Message: string, id: string | null, ticketId: string | null) => {
-          if (ticketId === data._id) {
-            if (userId !== id) {
-              setMessage(Message);
-            }
-          }
-        }
-      );
+      // socket.on(
+      //   'winner',
+      //   (WinnerMessage: string, id: string | null, ticketId: string | null) => {
+      //     if (ticketId === data._id) {
+      //       if (id === userId) {
+      //         setMessage(WinnerMessage);
+      //       }
+      //     }
+      //   }
+      // );
+      // socket.on(
+      //   'public',
+      //   (Message: string, id: string | null, ticketId: string | null) => {
+      //     if (ticketId === data._id) {
+      //       if (userId !== id) {
+      //         setMessage(Message);
+      //       }
+      //     }
+      //   }
+      // );
       socket.on(
         'putCredit',
         (
@@ -108,6 +145,26 @@ const Ticket = ({ data }: any) => {
     if (!open) {
       handleClickOpen();
     }
+    enqueueSnackbar(`You bought ${data.ticketName}`, {
+      preventDuplicate: true,
+      variant: 'success',
+      anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
+    });
+  };
+  const handleShowError = () => {
+    let err;
+    if (!playerFilter) {
+      err = 'You already bought the ticket';
+    } else if (ActivePlayers.length >= data.maxplayers) {
+      err = "Draw is going on'";
+    } else {
+      err = 'You have less credit';
+    }
+    enqueueSnackbar(`${err}`, {
+      preventDuplicate: true,
+      variant: 'error',
+      anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
+    });
   };
 
   return (
@@ -122,54 +179,79 @@ const Ticket = ({ data }: any) => {
       )}
       <Grid item xs={12} md={6} lg={4}>
         <Card raised sx={{ border: `2px solid ${theme.palette.primary.dark}` }}>
-          <CardContent
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <TicketCard data={data} ActivePlayers={ActivePlayers}>
+          <CardContent>
+            {websocketResponse && (
+              <TicketCard data={data} ActivePlayers={ActivePlayers}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    mt: '10px',
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    onClick={handleClickOpen}
+                    sx={{ mr: '10px' }}
+                  >
+                    View
+                  </Button>
+                  {!playerFilter ||
+                  ActivePlayers.length >= data.maxplayers ||
+                  data.price > points ? (
+                    <Button
+                      variant="contained"
+                      // disabled
+                      // onClick={handleClickConfirmOpen}
+                      disableElevation
+                      disableRipple
+                      sx={{
+                        color: `${theme.palette.action.disabled}`,
+                        backgroundColor: `${theme.palette.action.disabledBackground}`,
+                        ':hover': {
+                          color: `${theme.palette.action.disabled}`,
+                          backgroundColor: `${theme.palette.action.disabledBackground}`,
+                          // borderColor: `${theme.palette.action.disabled}`,
+                        },
+                      }}
+                      // onMouseOver={handleShowError}
+                      onClick={handleShowError}
+                    >
+                      Buy Now
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      onClick={handleClickConfirmOpen}
+                    >
+                      Buy Now
+                    </Button>
+                  )}
+                </Box>
+              </TicketCard>
+            )}
+            {!websocketResponse && (
               <Box
                 sx={{
                   display: 'flex',
-                  justifyContent: 'flex-start',
+                  justifyContent: 'center',
                   alignItems: 'center',
-                  mt: '10px',
+                  my: '65px',
+                  height: '100%',
+                  width: '100%',
                 }}
               >
-                <Button
-                  variant="outlined"
-                  onClick={handleClickOpen}
-                  sx={{ mr: '10px' }}
-                >
-                  View
-                </Button>
-                {ActivePlayers.filter((value) => {
-                  return value === userId;
-                }).length > 0 ||
-                ActivePlayers.length >= data.maxplayers ||
-                data.price > points ? (
-                  <Button
-                    variant="outlined"
-                    disabled
-                    onClick={handleClickConfirmOpen}
-                  >
-                    Buy Now
-                  </Button>
-                ) : (
-                  <Button variant="outlined" onClick={handleClickConfirmOpen}>
-                    Buy Now
-                  </Button>
-                )}
+                <CircularProgress color="inherit" />
               </Box>
-            </TicketCard>
+            )}
           </CardContent>
         </Card>
       </Grid>
       <TicketView
         data={data}
         message={message}
+        MessageType={MessageType}
         timer={timer}
         ActivePlayers={ActivePlayers}
         points={points}
@@ -177,6 +259,7 @@ const Ticket = ({ data }: any) => {
         setOpen={setOpen}
         setMessage={setMessage}
         confirmSetOpen={confirmSetOpen}
+        handleShowError={handleShowError}
       />
     </>
   );

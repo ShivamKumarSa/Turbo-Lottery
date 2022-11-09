@@ -38,22 +38,9 @@ const Register = () => {
     password: passwordSchema,
     confirmPassword: confirmPasswordSchema,
   });
-
+  console.log('register');
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const [showConfirmPassword, changeConfirmPasswordVisibility] =
-    React.useState<boolean>(false);
-
-  const handleClickChangeConfirmPassword = () => {
-    changeConfirmPasswordVisibility(!showConfirmPassword);
-  };
-
-  const handleCopy = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-  };
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-  };
 
   const methods = useForm({
     resolver: yupResolver(validationSchema),
@@ -68,6 +55,11 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
+      enqueueSnackbar(`Registering User Please Wait.`, {
+        preventDuplicate: true,
+        variant: 'info',
+        anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
+      });
       const response: any = await userRegister(data);
       if (response?.error) {
         enqueueSnackbar(
@@ -123,7 +115,12 @@ const Register = () => {
             py: '18px',
           }}
         >
-          <Typography variant="h4" align="center" margin="dense">
+          <Typography
+            variant="h4"
+            align="center"
+            margin="dense"
+            sx={{ textTransform: 'uppercase' }}
+          >
             FILL THE SIGN UP FORM
           </Typography>
         </Box>
@@ -133,48 +130,12 @@ const Register = () => {
             spacing={1}
             sx={{ display: 'flex', flexDirection: 'column', p: '40px' }}
           >
-            <LoginForm register={register} errors={errors} />
-            <Grid item>
-              <Typography variant="h5">Confirm Password</Typography>
-            </Grid>
-            <Grid item>
-              <TextField
-                required
-                placeholder="Enter Confirm Password"
-                onCopy={handleCopy}
-                onPaste={handlePaste}
-                type={showConfirmPassword ? 'text' : 'password'}
-                fullWidth
-                margin="dense"
-                {...register('confirmPassword')}
-                error={errors['confirmPassword'] ? true : false}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleClickChangeConfirmPassword}
-                        aria-label="toggle password visibility"
-                        edge="end"
-                        sx={{ color: theme.palette.primary.light }}
-                      >
-                        {showConfirmPassword ? (
-                          <VisibilityOff />
-                        ) : (
-                          <Visibility />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              {errors['confirmPassword'] ? (
-                <span style={{ color: `${theme.palette.error.main}` }}>
-                  <ErrorMessage errors={errors} name="confirmPassword" />
-                </span>
-              ) : (
-                <span>&nbsp;</span>
-              )}
-            </Grid>
+            <LoginForm
+              register={register}
+              errors={errors}
+              registerBool={true}
+            />
+
             <Grid
               item
               mt={3}
@@ -190,18 +151,25 @@ const Register = () => {
                 sx={{
                   p: '5px 25px',
                   background: `linear-gradient(45deg,${theme.palette.secondary.dark},${theme.palette.secondary.main},${theme.palette.secondary.light});`,
+                  textTransform: 'capitalize',
                 }}
               >
                 Sign Up
               </Button>
               <Box ml={3}>
-                <Typography variant="body1">Already have an account</Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ textTransform: 'capitalize' }}
+                >
+                  Already have an account
+                </Typography>
                 <Typography variant="body1">
                   <NavLink
                     to="/login"
                     style={{
                       textDecoration: 'none',
                       color: `${theme.palette.secondary.dark}`,
+                      textTransform: 'capitalize',
                     }}
                   >
                     Sign In
@@ -213,7 +181,7 @@ const Register = () => {
           </Grid>
         </FormProvider>
       </Card>
-      <img src={banner} alt="banner" />
+      <img src={banner} alt="banner" width="40%" />
     </Box>
   );
 };

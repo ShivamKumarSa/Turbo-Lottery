@@ -32,16 +32,14 @@ export interface ticketInterface {
   price: number;
   maxplayers: number;
   ticketName: string;
-  priority: number;
+  active: boolean;
   timer: number;
   participants?: string[];
   ticketHistory?: ticketHistoryInterface[];
 }
 
-export interface initialStateInterface {
-  username: string | null;
-  id: string | null;
-  userType: string | null;
-  userLoggedIn: boolean | null;
-  token: string | null;
+export enum messageEnum {
+  winner,
+  invalid,
+  message,
 }

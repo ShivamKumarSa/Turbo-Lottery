@@ -28,7 +28,7 @@ export class TicketService {
         price: body.price,
         maxplayers: body.maxplayers,
         ticketName: body.ticketName,
-        priority: body.priority,
+        active: body.active,
         timer: body.timer,
       });
       const savedTicket = await ticket.save();
@@ -69,8 +69,18 @@ export class TicketService {
     }
   }
 
+  async updateByAdmin(ticketId: string, body: UpdateTicketDto) {
+    const ticketBeforeUpdate = await this.get(ticketId);
+    if (ticketBeforeUpdate.participants.length === 0) {
+      await this.update(ticketId, body);
+    } else {
+      throw new BadRequestException('Ticket contain some participants');
+    }
+  }
+
   async update(ticketId: string, body: UpdateTicketDto) {
     this.checkId(ticketId);
+
     try {
       const ticket = await this.ticketModel.findByIdAndUpdate(
         ticketId,
@@ -88,27 +98,39 @@ export class TicketService {
       throw new InternalServerErrorException(error);
     }
   }
-  async updatePriority(ticketId: string, body: UpdateTicketDto) {
-    try {
-      const ticket = await this.update(ticketId, body);
-      const { ticketName, priority } = ticket;
-      return { ticketName, priority };
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
+
+  // async updatePriority(ticketId: string, body: UpdateTicketDto) {
+  //   try {
+  //     const ticket = await this.update(ticketId, body);
+  //     const { ticketName, priority } = ticket;
+  //     return { ticketName, priority };
+  //   } catch (error) {
+  //     throw new InternalServerErrorException(error);
+  //   }
+  // }
 
   async delete(ticketId: string) {
-    this.checkId(ticketId);
-    try {
-      const ticket = await this.ticketModel.findByIdAndDelete(ticketId);
-      if (!ticket) {
-        throw new NotFoundException('Ticket Not Found');
-      } else {
-        return { msg: 'Ticket Deleted Successfully' };
+    const ticketBeforeDelete = await this.get(ticketId);
+    if (
+      ticketBeforeDelete.participants.length === 0 &&
+      !ticketBeforeDelete.active
+    ) {
+      try {
+        const ticket = await this.ticketModel.findByIdAndDelete(ticketId);
+        if (!ticket) {
+          throw new NotFoundException('Ticket Not Found');
+        } else {
+          return { msg: 'Ticket Deleted Successfully' };
+        }
+      } catch (error) {
+        throw new InternalServerErrorException(error);
       }
-    } catch (error) {
-      throw new InternalServerErrorException(error);
+    } else {
+      throw new BadRequestException(
+        ticketBeforeDelete.participants.length === 0
+          ? 'Ticket is Active. Please make inactive first'
+          : 'Ticket contain some participants'
+      );
     }
   }
 }

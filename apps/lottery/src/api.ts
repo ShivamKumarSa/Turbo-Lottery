@@ -89,6 +89,18 @@ export const api = createApi({
       }),
       invalidatesTags: ['allTickets'],
     }),
+    deleteTicket: build.mutation<any, any>({
+      query: ({ token, ticketId }) => ({
+        url: `/ticket/${ticketId}`,
+        method: 'DELETE',
+        // body: JSON.stringify(body),
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+      invalidatesTags: ['allTickets'],
+    }),
     updateUser: build.mutation<any, FieldValues>({
       query: ({ body, token, userId }) => ({
         url: `/user/${userId}`,
@@ -111,4 +123,5 @@ export const {
   useCreateTicketMutation,
   useUpdateTicketMutation,
   useUpdateUserMutation,
+  useDeleteTicketMutation,
 } = api;

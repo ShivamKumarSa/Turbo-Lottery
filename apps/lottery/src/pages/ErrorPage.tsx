@@ -11,7 +11,10 @@ const ErrorPage = () => {
       <Header>
         <Typography
           variant="h5"
-          sx={{ color: `${theme.palette.secondary.main}` }}
+          sx={{
+            color: `${theme.palette.secondary.main}`,
+            textTransform: 'uppercase',
+          }}
         >
           ERROR 404
         </Typography>

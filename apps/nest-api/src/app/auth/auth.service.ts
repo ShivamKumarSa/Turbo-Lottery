@@ -20,11 +20,15 @@ export class AuthService {
   async validateUser(username: string, pass: string) {
     const user = await this.userService.findOne(username);
     if (!user) {
-      throw new NotFoundException('User Not Found');
+      throw new NotFoundException(
+        'Either your username or password is incorrect'
+      );
     } else {
       const passwordCompare = await bcrypt.compare(pass, user.password);
       if (!passwordCompare) {
-        throw new BadRequestException('Invalid credentials');
+        throw new BadRequestException(
+          'Either your username or password is incorrect'
+        );
       } else {
         const { _id, username, isAdmin } = user;
         return { _id, username, isAdmin };

@@ -1,5 +1,6 @@
 import { ticketHistoryInterface, ticketInterface } from '@turbo-lottery/data';
 import {
+  IsBoolean,
   IsInt,
   IsOptional,
   IsPositive,
@@ -13,20 +14,23 @@ export class UpdateTicketDto implements ticketInterface {
   @IsOptional()
   @IsInt()
   @IsPositive()
-  @Min(1)
+  @Min(50)
   price: number;
 
   @IsOptional()
   @IsInt()
   @IsPositive()
-  @Min(1)
+  @Min(2)
   maxplayers: number;
 
+  // @IsOptional()
+  // @IsInt()
+  // @IsPositive()
+  // @Min(1)
+  // priority: number;
   @IsOptional()
-  @IsInt()
-  @IsPositive()
-  @Min(1)
-  priority: number;
+  @IsBoolean()
+  active: boolean;
 
   @IsOptional()
   @IsInt()
@@ -37,7 +41,7 @@ export class UpdateTicketDto implements ticketInterface {
   @IsOptional()
   @MinLength(2)
   @MaxLength(30)
-  @Matches(/^[A-Za-z ]*$/)
+  @Matches(/^[A-Za-z0-9 ]*$/)
   ticketName: string;
 
   @IsOptional()
