@@ -1,6 +1,8 @@
 import { Box, Typography } from '@mui/material';
+import { memo } from 'react';
 
 const TicketCard = ({ data, ActivePlayers, children }: any) => {
+  console.log('tiket card');
   return (
     <>
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -50,14 +52,20 @@ const TicketCard = ({ data, ActivePlayers, children }: any) => {
           </Typography>
         </Box>
         <Box sx={{ width: '100%' }}>
-          <Typography variant="h3" sx={{ fontWeight: '600' }}>
+          <Typography
+            variant="h3"
+            sx={{ fontWeight: '600', textTransform: 'capitalize' }}
+          >
             {data.ticketName}
           </Typography>
           <Typography variant="h6" sx={{ fontWeight: '600' }}>
             Amount:&nbsp;&nbsp;{data.price}
           </Typography>
           {ActivePlayers && (
-            <Typography variant="h6" sx={{ fontWeight: '600' }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: '600', textTransform: 'lowercase' }}
+            >
               {data.maxplayers - ActivePlayers.length}
               <span style={{ fontWeight: '400' }}> out of </span>
               {data.maxplayers}{' '}
@@ -71,4 +79,4 @@ const TicketCard = ({ data, ActivePlayers, children }: any) => {
   );
 };
 
-export default TicketCard;
+export default memo(TicketCard);

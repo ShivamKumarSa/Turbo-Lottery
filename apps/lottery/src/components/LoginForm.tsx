@@ -13,7 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React from 'react';
+import React, { memo } from 'react';
 import { Outlet } from 'react-router-dom';
 import theme from '../styles/theme';
 import InfoIcon from '@mui/icons-material/Info';
@@ -27,7 +27,7 @@ const LoginForm = ({ register, errors, registerBool }: any) => {
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
   };
-
+  console.log('login form');
   const [showPassword, changePasswordVisibility] =
     React.useState<boolean>(false);
   const handleClickChangePassword = () => {
@@ -64,25 +64,34 @@ const LoginForm = ({ register, errors, registerBool }: any) => {
           >
             <List>
               {message === 'username' && (
-                <ListItemText>
-                  Username can only contain alphabets and _(underscore)
-                </ListItemText>
+                <>
+                  <ListItemText>
+                    Username can only contain alphabets and (underscore)_
+                  </ListItemText>
+                  <ListItemText>Minimum Length : 2 characters</ListItemText>
+                  <ListItemText>Maximum Length : 20 characters</ListItemText>
+                  <ListItemText>
+                    Cannot inculde leading and trailing spaces
+                  </ListItemText>
+                </>
               )}
               {message === 'password' && (
                 <>
-                  <ListItemText>Password have atleast :</ListItemText>
+                  <ListItemText>Password must contain :</ListItemText>
                   <ListItemText>- One small case letter</ListItemText>
                   <ListItemText>- One upper case letter</ListItemText>
                   <ListItemText>- One digit</ListItemText>
-                  <ListItemText>- One speial characters(@$!%*#?&)</ListItemText>
+                  <ListItemText>- One special character(@$!%*#?&)</ListItemText>
                   <ListItemText>
-                    Password may not have white spaces
+                    Password would not have white spaces
                   </ListItemText>
+                  <ListItemText>Minimum Length : 8 characters</ListItemText>
+                  <ListItemText>Maximum Length : 20 characters</ListItemText>
                 </>
               )}
               {message === 'cpassword' && (
                 <ListItemText>
-                  Confirm Password have to match with Password
+                  Confirm Password not match with Password
                 </ListItemText>
               )}
             </List>
@@ -241,4 +250,4 @@ const LoginForm = ({ register, errors, registerBool }: any) => {
   );
 };
 
-export default LoginForm;
+export default memo(LoginForm);

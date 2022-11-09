@@ -9,6 +9,7 @@ import icon4 from '../Images/icon-4.png';
 import icon5 from '../Images/icon-5.png';
 
 const Footer = () => {
+  console.log('footer');
   return (
     <Box
       sx={{
@@ -68,6 +69,7 @@ const Footer = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                textTransform: 'capitalize',
               }}
             >
               <span>Lottery Players Can Play Turbo Lottery Online From</span>
@@ -105,6 +107,7 @@ const Footer = () => {
               variant="h6"
               sx={{
                 color: `${theme.palette.primary.contrastText}`,
+                textTransform: 'capitalize',
               }}
             >
               Copyright © 2022. All Right Reserved By Turbo Lottery

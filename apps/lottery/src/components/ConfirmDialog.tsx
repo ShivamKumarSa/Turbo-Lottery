@@ -3,6 +3,8 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
+import { Typography } from '@mui/material';
+import theme from '../styles/theme';
 
 interface ConfirmDialogProps {
   acceptFunction: () => void;
@@ -27,11 +29,26 @@ const ConfirmDialog = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>{heading}</DialogTitle>
+    <Dialog open={open} onClose={handleClose} fullWidth>
+      <DialogTitle>
+        <Typography
+          variant="h4"
+          sx={{ color: `${theme.palette.primary.dark}` }}
+        >
+          {heading}
+        </Typography>
+      </DialogTitle>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleAcceptClose}>Yes</Button>
+        <Button onClick={handleClose} size="large">
+          <Typography variant="h5" sx={{ fontWeight: '600' }}>
+            Discard
+          </Typography>
+        </Button>
+        <Button onClick={handleAcceptClose} size="large">
+          <Typography variant="h5" sx={{ fontWeight: '600' }}>
+            Proceed
+          </Typography>
+        </Button>
       </DialogActions>
     </Dialog>
   );

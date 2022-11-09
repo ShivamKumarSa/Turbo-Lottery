@@ -1,12 +1,15 @@
 import {
   CircularProgress,
   Paper,
+  styled,
   Table,
   TableBody,
   TableCell,
+  tableCellClasses,
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useGetUsersQuery } from '../api';
@@ -24,23 +27,34 @@ const AdminDashboardUserView = () => {
 
   if (response?.currentData) {
     return (
-      <Box sx={{ m: '25px' }}>
+      <Box sx={{ m: '25px 20px' }}>
+        <Typography
+          variant="h2"
+          sx={{
+            my: '15px',
+            display: 'flex',
+            justifyContent: 'center',
+            textDecoration: 'underline',
+            color: `${theme.palette.primary.dark}`,
+          }}
+        >
+          User Details
+        </Typography>
         <TableContainer
           component={Paper}
-          sx={{ maxWidth: 650, maxHeight: 600 }}
+          // sx={{ width: 650, maxHeight: 600 }}
         >
-          <Table sx={{ maxWidth: 700 }}>
+          <Table>
             <TableHead
               sx={{
                 background: `${theme.palette.primary.main}`,
               }}
             >
               <TableRow>
-                <TableCell>S.No</TableCell>
-                <TableCell>Username</TableCell>
-                <TableCell>IsAdmin</TableCell>
-                <TableCell>Credit</TableCell>
-                <TableCell>Add Credit</TableCell>
+                <StyledTableCell>S.No</StyledTableCell>
+                <StyledTableCell>Username</StyledTableCell>
+                <StyledTableCell>Credit</StyledTableCell>
+                <StyledTableCell>Add Credit</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -73,4 +87,11 @@ const AdminDashboardUserView = () => {
     );
   }
 };
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    color: theme.palette.primary.contrastText,
+    fontSize: '20px',
+    textTransform: 'capitalize',
+  },
+}));
 export default AdminDashboardUserView;

@@ -15,13 +15,13 @@ export class CreateTicketDto implements ticketInterface {
   @IsOptional()
   @IsInt()
   @IsPositive()
-  @Min(1)
+  @Min(50)
   price: number;
 
   @IsOptional()
   @IsInt()
   @IsPositive()
-  @Min(1)
+  @Min(2)
   maxplayers: number;
 
   // @IsOptional()

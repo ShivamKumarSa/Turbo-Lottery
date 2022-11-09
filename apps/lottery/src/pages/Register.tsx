@@ -38,7 +38,7 @@ const Register = () => {
     password: passwordSchema,
     confirmPassword: confirmPasswordSchema,
   });
-
+  console.log('register');
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -55,6 +55,11 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
+      enqueueSnackbar(`Registering User Please Wait.`, {
+        preventDuplicate: true,
+        variant: 'info',
+        anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
+      });
       const response: any = await userRegister(data);
       if (response?.error) {
         enqueueSnackbar(
@@ -110,7 +115,12 @@ const Register = () => {
             py: '18px',
           }}
         >
-          <Typography variant="h4" align="center" margin="dense">
+          <Typography
+            variant="h4"
+            align="center"
+            margin="dense"
+            sx={{ textTransform: 'uppercase' }}
+          >
             FILL THE SIGN UP FORM
           </Typography>
         </Box>
@@ -141,18 +151,25 @@ const Register = () => {
                 sx={{
                   p: '5px 25px',
                   background: `linear-gradient(45deg,${theme.palette.secondary.dark},${theme.palette.secondary.main},${theme.palette.secondary.light});`,
+                  textTransform: 'capitalize',
                 }}
               >
                 Sign Up
               </Button>
               <Box ml={3}>
-                <Typography variant="body1">Already have an account</Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ textTransform: 'capitalize' }}
+                >
+                  Already have an account
+                </Typography>
                 <Typography variant="body1">
                   <NavLink
                     to="/login"
                     style={{
                       textDecoration: 'none',
                       color: `${theme.palette.secondary.dark}`,
+                      textTransform: 'capitalize',
                     }}
                   >
                     Sign In
@@ -164,7 +181,7 @@ const Register = () => {
           </Grid>
         </FormProvider>
       </Card>
-      <img src={banner} alt="banner" />
+      <img src={banner} alt="banner" width="40%" />
     </Box>
   );
 };

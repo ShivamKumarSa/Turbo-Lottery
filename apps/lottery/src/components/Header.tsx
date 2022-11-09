@@ -4,6 +4,7 @@ import leftBg from '../Images/left-bg.png';
 import rightBg from '../Images/right-bg.png';
 
 const Header = ({ children }: any) => {
+  console.log('headre');
   return (
     <Box
       sx={{

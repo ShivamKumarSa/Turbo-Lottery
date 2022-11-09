@@ -29,12 +29,13 @@ export const stringRequired = (name: string) => {
   return Yup.string().required(`${name} is required`);
 };
 
-export const numberGeneralSchema = (name: string) => {
+export const numberGeneralSchema = (name: string, min: number) => {
   return Yup.number()
-    .typeError(`Please enter a valid ${name}`)
     .integer(`${name} can only be integer`)
     .positive(`${name} can't be negative`)
-    .min(1, `Minimum ${name} can be 1`);
+    .min(min, `Minimum ${name} can be ${min}`)
+    .required(`Please enter the ${name}`)
+    .typeError(`Please enter a valid ${name}`);
 };
 
 export const ticketNameSchema = Yup.string()

@@ -22,7 +22,7 @@ export class UpdateUserDto implements userInterface {
 
   @IsInt()
   @IsPositive()
-  @Min(1)
+  @Min(0)
   @IsOptional()
   credit: number;
 

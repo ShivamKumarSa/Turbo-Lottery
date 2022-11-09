@@ -23,7 +23,7 @@ const Login = () => {
     username: stringRequired('Username'),
     password: stringRequired('Password'),
   });
-
+  console.log('login');
   const methods = useForm({
     mode: 'all',
     resolver: yupResolver(validationSchema),
@@ -50,6 +50,11 @@ const Login = () => {
       }
       if (response?.data) {
         localStorage.setItem('token', response.data.access_token);
+        // console.log(response.data.access_token);
+        // const dcd = window.atob(response.data.access_token.split('.')[1]);
+        // console.log(JSON.parse(dcd));
+        // console.log(JSON.parse(dcd).exp);
+        // console.log(Math.floor(Date.now() / 1000));
         localStorage.setItem('name', data['username']);
         localStorage.setItem('userId', response.data.id);
         if (response.data.isAdmin) {
@@ -59,7 +64,7 @@ const Login = () => {
           localStorage.setItem('userType', 'User');
           navigate('/dashboard');
         }
-        enqueueSnackbar('Successfully Logged In', {
+        enqueueSnackbar('Successfully Sign In', {
           preventDuplicate: true,
           variant: 'success',
           anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
@@ -98,7 +103,12 @@ const Login = () => {
             py: '18px',
           }}
         >
-          <Typography variant="h4" align="center" margin="dense">
+          <Typography
+            variant="h4"
+            align="center"
+            margin="dense"
+            sx={{ textTransform: 'uppercase' }}
+          >
             FILL THE SIGN IN FORM
           </Typography>
         </Box>
@@ -128,18 +138,25 @@ const Login = () => {
                 sx={{
                   p: '5px 25px',
                   background: `linear-gradient(45deg,${theme.palette.secondary.dark},${theme.palette.secondary.main},${theme.palette.secondary.light});`,
+                  textTransform: 'capitalize',
                 }}
               >
                 Sign In
               </Button>
               <Box ml={3}>
-                <Typography variant="body1">Doesn't have an account</Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ textTransform: 'capitalize' }}
+                >
+                  Doesn't have an account
+                </Typography>
                 <Typography variant="body1">
                   <NavLink
                     to="/register"
                     style={{
                       textDecoration: 'none',
                       color: `${theme.palette.secondary.dark}`,
+                      textTransform: 'capitalize',
                     }}
                   >
                     Sign Up
