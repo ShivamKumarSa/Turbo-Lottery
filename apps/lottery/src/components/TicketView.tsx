@@ -7,7 +7,7 @@ import TicketHistory from './TicketHistory';
 import banner from '../Images/sign-in-img.png';
 import popper from '../Images/popper.gif';
 import sparkle from '../Images/sparkle.gif';
-import { memo } from 'react';
+
 const TicketView = ({
   data,
   message,
@@ -340,4 +340,4 @@ const TicketView = ({
   );
 };
 
-export default memo(TicketView);
+export default TicketView;

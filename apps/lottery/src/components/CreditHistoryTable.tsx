@@ -9,7 +9,6 @@ import {
   TableRow,
 } from '@mui/material';
 import { creditHistoryInterface } from '@turbo-lottery/data';
-import { memo } from 'react';
 
 interface creditHistoryTableInterface {
   creditHistory: creditHistoryInterface[];
@@ -63,4 +62,4 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontSize: 14,
   },
 }));
-export default memo(CreditHistoryTable);
+export default CreditHistoryTable;

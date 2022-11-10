@@ -13,7 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, { memo } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 import theme from '../styles/theme';
 import InfoIcon from '@mui/icons-material/Info';
@@ -250,4 +250,4 @@ const LoginForm = ({ register, errors, registerBool }: any) => {
   );
 };
 
-export default memo(LoginForm);
+export default LoginForm;
