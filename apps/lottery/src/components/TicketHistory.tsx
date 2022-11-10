@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { ticketHistoryInterface } from '@turbo-lottery/data';
-import React, { memo, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import theme from '../styles/theme';
 
@@ -125,4 +125,4 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
-export default memo(TicketHistory);
+export default TicketHistory;

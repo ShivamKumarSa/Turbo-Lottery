@@ -37,6 +37,11 @@ const Login = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
+      enqueueSnackbar('Signing In!! Please wait', {
+        preventDuplicate: true,
+        variant: 'info',
+        anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
+      });
       const response: any = await userLogin(data);
       if (response?.error) {
         enqueueSnackbar(

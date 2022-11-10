@@ -376,7 +376,7 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 let AppService = class AppService {
     getData() {
-        return { message: 'Welcome to nestaApi!' };
+        return { message: 'Welcome to nestaApi!!!' };
     }
 };
 AppService = tslib_1.__decorate([
@@ -500,7 +500,7 @@ AuthModule = tslib_1.__decorate([
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
                 secret: process.env.NX_SECRET_KEY,
-                signOptions: { expiresIn: '2 days' },
+                signOptions: { expiresIn: '18000s' },
             }),
         ],
         controllers: [auth_controller_1.AuthController],

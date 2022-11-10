@@ -1,5 +1,4 @@
 import { Box, Typography } from '@mui/material';
-import { memo } from 'react';
 
 const TicketCard = ({ data, ActivePlayers, children }: any) => {
   console.log('tiket card');
@@ -79,4 +78,4 @@ const TicketCard = ({ data, ActivePlayers, children }: any) => {
   );
 };
 
-export default memo(TicketCard);
+export default TicketCard;

@@ -52,22 +52,6 @@ const Ticket = ({ data }: any) => {
     }
     if (socket) {
       socket.on(
-        'receive',
-        (activePlayers: string[], ticketid: string | null) => {
-          setWebsocketResponse(true);
-          if (ticketid === data._id) {
-            setActivePlayers(activePlayers);
-            setPlayerFilter(
-              activePlayers.filter((value) => {
-                return value === userId;
-              }).length > 0
-                ? false
-                : true
-            );
-          }
-        }
-      );
-      socket.on(
         'message',
         (
           Message: string,
@@ -75,6 +59,7 @@ const Ticket = ({ data }: any) => {
           id: string | null,
           messageType: messageEnum
         ) => {
+          console.log('a');
           if (ticketid === data._id) {
             if (messageType === 0) {
               if (id === userId) {
@@ -92,6 +77,23 @@ const Ticket = ({ data }: any) => {
                 setMessageType(messageType);
               }
             }
+          }
+          console.log('b');
+        }
+      );
+      socket.on(
+        'receive',
+        (activePlayers: string[], ticketid: string | null) => {
+          setWebsocketResponse(true);
+          if (ticketid === data._id) {
+            setActivePlayers(activePlayers);
+            setPlayerFilter(
+              activePlayers.filter((value) => {
+                return value === userId;
+              }).length > 0
+                ? false
+                : true
+            );
           }
         }
       );
