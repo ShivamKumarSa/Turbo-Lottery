@@ -25,7 +25,7 @@ const TicketView = ({
   const handleClose = () => {
     setOpen(false);
   };
-  console.log('ticketview');
+
   const handleCloseMessage = () => {
     setMessage('');
   };

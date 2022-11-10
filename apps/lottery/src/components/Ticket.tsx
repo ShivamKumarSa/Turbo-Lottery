@@ -32,7 +32,7 @@ const Ticket = ({ data }: any) => {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  console.log('ticket');
+
   const handleClickConfirmOpen = () => {
     confirmSetOpen(true);
   };
@@ -59,7 +59,6 @@ const Ticket = ({ data }: any) => {
           id: string | null,
           messageType: messageEnum
         ) => {
-          console.log('a');
           if (ticketid === data._id) {
             if (messageType === 0) {
               if (id === userId) {
@@ -78,7 +77,6 @@ const Ticket = ({ data }: any) => {
               }
             }
           }
-          console.log('b');
         }
       );
       socket.on(

@@ -27,7 +27,7 @@ const LoginForm = ({ register, errors, registerBool }: any) => {
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
   };
-  console.log('login form');
+
   const [showPassword, changePasswordVisibility] =
     React.useState<boolean>(false);
   const handleClickChangePassword = () => {

@@ -14,7 +14,7 @@ const Dashboard = () => {
   const token = localStorage.getItem('token');
   const response: any = useGetTicketsQuery(token);
   const { enqueueSnackbar } = useSnackbar();
-  console.log('dashboard');
+
   if (response.isError) {
     if (response?.error.status === 401) {
       localStorage.removeItem('token');

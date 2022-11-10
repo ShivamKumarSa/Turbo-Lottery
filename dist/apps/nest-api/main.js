@@ -206,18 +206,21 @@ let AppGateway = class AppGateway {
                                 //   `4.....Waiting for ${updateTicket.maxplayers} - ${updateTicket.participants.length} more users to buy this tickets ticketstickkets`,
                                 //   ticketId
                                 // );
-                                const d = new Date();
+                                const date = new Date();
+                                const extendDate = new Date(date.getTime() + 19800000);
                                 const interval = setInterval(() => tslib_1.__awaiter(this, void 0, void 0, function* () {
                                     updateTicket.timer -= 1;
                                     this.server.sockets.emit('timer', updateTicket.timer, ticketId);
                                     if (updateTicket.timer === 0) {
                                         let winnerId = updateTicket.participants[Math.floor(Math.random() * updateTicket.maxplayers)];
-                                        const idWinner = yield this.userService.get(winnerId);
-                                        const previousWinnerName = updateTicket.ticketHistory[updateTicket.ticketHistory.length - 1].winner;
-                                        const previousWinner = yield this.userService.findOne(previousWinnerName);
-                                        if (previousWinner._id.equals(idWinner._id)) {
-                                            winnerId =
-                                                updateTicket.participants[Math.floor(Math.random() * updateTicket.maxplayers)];
+                                        if (updateTicket.ticketHistory.length > 0) {
+                                            const idWinner = yield this.userService.get(winnerId);
+                                            const previousWinnerName = updateTicket.ticketHistory[updateTicket.ticketHistory.length - 1].winner;
+                                            const previousWinner = yield this.userService.findOne(previousWinnerName);
+                                            if (previousWinner._id.equals(idWinner._id)) {
+                                                winnerId =
+                                                    updateTicket.participants[Math.floor(Math.random() * updateTicket.maxplayers)];
+                                            }
                                         }
                                         const winner = yield this.userService.get(winnerId);
                                         this.server.sockets.emit('message', `${winner.username} you are the winner of `, ticketId, `${winner._id}`, data_1.messageEnum.winner);
@@ -242,7 +245,7 @@ let AppGateway = class AppGateway {
                                         updateTicket.participants.splice(0, updateTicket.participants.length);
                                         updateTicket.ticketHistory.push({
                                             winner: `${winner.username}`,
-                                            playedOn: `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`,
+                                            playedOn: `${extendDate.getDate()}/${extendDate.getMonth()}/${extendDate.getFullYear()} ${extendDate.getHours()}:${extendDate.getMinutes()}:${extendDate.getSeconds()}`,
                                         });
                                         updateTicket.timer = 10;
                                         updateTicket = yield this.ticketService.update(`${updateTicket._id}`, updateTicket);
