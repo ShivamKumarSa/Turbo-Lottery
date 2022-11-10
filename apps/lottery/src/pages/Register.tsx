@@ -38,7 +38,7 @@ const Register = () => {
     password: passwordSchema,
     confirmPassword: confirmPasswordSchema,
   });
-  console.log('register');
+
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 

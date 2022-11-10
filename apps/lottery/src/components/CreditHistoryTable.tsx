@@ -18,7 +18,6 @@ const CreditHistoryTable = ({
   creditHistory,
   length,
 }: creditHistoryTableInterface) => {
-  console.log('credit history table');
   return (
     <TableContainer>
       <Table>

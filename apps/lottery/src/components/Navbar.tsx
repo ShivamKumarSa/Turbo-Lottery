@@ -48,7 +48,7 @@ const Navbar = () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  console.log('navbar');
+
   const handleClickConfirmOpen = () => {
     confirmSetOpen(true);
   };

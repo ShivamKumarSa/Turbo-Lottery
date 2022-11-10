@@ -23,7 +23,7 @@ const Login = () => {
     username: stringRequired('Username'),
     password: stringRequired('Password'),
   });
-  console.log('login');
+
   const methods = useForm({
     mode: 'all',
     resolver: yupResolver(validationSchema),

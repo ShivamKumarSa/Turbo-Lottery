@@ -24,7 +24,7 @@ const TicketHistory = ({ TicketId }: { TicketId: string }) => {
   >([]);
   const [websocketResponse, setWebsocketResponse] =
     React.useState<boolean>(false);
-  console.log('historyticket');
+
   useEffect(() => {
     const newSocket = io(`${process.env['NX_REACT_APP_BACKEND']}`);
     setSocket(newSocket);

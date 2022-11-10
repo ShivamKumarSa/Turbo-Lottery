@@ -1,7 +1,6 @@
 import { Box, Typography } from '@mui/material';
 
 const TicketCard = ({ data, ActivePlayers, children }: any) => {
-  console.log('tiket card');
   return (
     <>
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>

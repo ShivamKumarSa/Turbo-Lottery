@@ -9,7 +9,6 @@ import icon4 from '../Images/icon-4.png';
 import icon5 from '../Images/icon-5.png';
 
 const Footer = () => {
-  console.log('footer');
   return (
     <Box
       sx={{
